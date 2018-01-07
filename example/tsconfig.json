@@ -1,0 +1,11 @@
+{
+    "files": [
+        "scene_example.ts",
+        "main.ts"
+    ],
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "allowJs": true
+    }
+}
