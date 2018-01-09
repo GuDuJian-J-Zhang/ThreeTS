@@ -1,6 +1,6 @@
 // import * as THREE from "../../three.js/build/three"
 namespace example {
-	class SceneExample {
+	export class SceneExample {
 		private m_scene = new THREE.Scene();
 		private m_camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 		private m_renderer = new THREE.WebGLRenderer();
@@ -9,7 +9,7 @@ namespace example {
 			let that = this;
 			that.m_renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( that.m_renderer.domElement );
-			let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			let geometry = new THREE.BoxGeometry( 1, 1, 5 );
 			let material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 			that.m_cube = new THREE.Mesh( geometry, material );
 			that.m_scene.add( that.m_cube );
@@ -18,7 +18,9 @@ namespace example {
 		
 		animate(): void  {
 			let that = this;
-			requestAnimationFrame( that.animate );
+			requestAnimationFrame( () => {
+				this.animate();
+			} );
 	
 			that.m_cube.rotation.x += 0.1;
 			that.m_cube.rotation.y += 0.1;
