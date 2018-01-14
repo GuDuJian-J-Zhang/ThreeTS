@@ -1,7 +1,7 @@
 /**
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn /
  */
-declare namespace threets {
+declare namespace scene {
     class Scene extends THREE.Object3D {
         private m_type;
         private m_background;
@@ -13,6 +13,7 @@ declare namespace threets {
         readonly overrideMaterial: any;
         readonly autoUpdate: boolean;
         readonly background: any;
+        copy(source: Scene, recursive?: boolean): Scene;
         toJSON(meta: any): void;
     }
 }

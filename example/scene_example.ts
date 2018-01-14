@@ -1,8 +1,8 @@
 // import * as THREE from "../../three.js/build/three"
-/// <reference path = "../typings/threets.d.ts" />
+/// <reference path = "../typings/scene.d.ts" />
 namespace example {
 	export class SceneExample {
-		private m_scene = new threets.Scene();
+		private m_scene = new scene.Scene();
 		private m_camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 		private m_renderer = new THREE.WebGLRenderer();
 		private m_cube = undefined;

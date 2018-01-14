@@ -1,7 +1,7 @@
 /**
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn /
  */
-namespace threets {
+namespace scene {
     export class Scene extends THREE.Object3D{
         private m_type = 'Scene';
         private m_background = null;
@@ -28,21 +28,21 @@ namespace threets {
             return this.m_background;
         }
 
-        // copy(source: Scene, recursive?: boolean): Scene {
-        //     let that = this;
-        //     super.copy(source, recursive);
-        //     if ( source.m_background !== null ) 
-        //         that.m_background = source.m_background.clone();
-        //     if ( source.m_fog !== null ) 
-        //         that.m_fog = source.m_fog.clone();
-        //     if ( source.m_overrideMaterial !== null ) 
-        //         this.m_overrideMaterial = source.m_overrideMaterial.clone();
+        copy(source: Scene, recursive?: boolean): Scene {
+            let that = this;
+            super.copy(source, recursive);
+            if ( source.m_background !== null ) 
+                that.m_background = source.m_background.clone();
+            if ( source.m_fog !== null ) 
+                that.m_fog = source.m_fog.clone();
+            if ( source.m_overrideMaterial !== null ) 
+                this.m_overrideMaterial = source.m_overrideMaterial.clone();
     
-        //     that.m_autoUpdate = source.m_autoUpdate;
-        //     // that.m_matrixAutoUpdate = source.m_matrixAutoUpdate;
+            that.m_autoUpdate = source.m_autoUpdate;
+            that.matrixAutoUpdate = source.matrixAutoUpdate; ///< inherit from THREE.Object3D
     
-        //     return that;
-        // }
+            return that;
+        }
 
         toJSON(meta): void {
             let that = this;
