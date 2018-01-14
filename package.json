@@ -9,10 +9,16 @@
   "author": "gudujian (zhangjun_dg@mail.dlut.edu.cn)",
   "license": "MIT",
   "dependencies": {
-    "@types/three": "^0.89.1",
     "@types/node": "^8.5.7",
+    "@types/three": "^0.89.1",
     "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-header": "^1.8.9",
+    "gulp-replace": "^0.6.1",
+    "gulp-sourcemaps": "^2.6.3",
     "gulp-typescript": "^3.2.3",
+    "merge2": "^1.2.1",
     "three": "^0.89.0",
     "typescript": "^2.6.2",
     "typings": "^2.1.1"
