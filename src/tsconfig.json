@@ -1,6 +1,7 @@
 {
     "files": [
-        "scene/scene.ts"
+        "scene/scene.ts",
+        "scene/fog.ts"
     ],
     "compilerOptions": {
         "module": "commonjs",
