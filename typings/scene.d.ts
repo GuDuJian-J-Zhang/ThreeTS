@@ -9,10 +9,10 @@ declare namespace scene {
         private m_overrideMaterial;
         private m_autoUpdate;
         constructor();
-        readonly fog: Fog;
+        fog: Fog;
         readonly overrideMaterial: any;
         readonly autoUpdate: boolean;
-        readonly background: any;
+        background: THREE.Color;
         copy(source: Scene, recursive?: boolean): Scene;
         toJSON(meta: any): void;
     }
@@ -34,5 +34,19 @@ declare namespace scene {
         readonly far: number;
         clone(): Fog;
         toJSON(): Object;
+    }
+}
+/**
+ * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
+ */
+declare namespace scene {
+    class FogExp2 {
+        private m_name;
+        private m_color;
+        private m_density;
+        private static s_isFogExp2;
+        constructor(color: number, density?: number);
+        clone(): FogExp2;
+        toJSON(): object;
     }
 }

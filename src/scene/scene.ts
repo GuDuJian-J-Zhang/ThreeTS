@@ -4,7 +4,7 @@
 namespace scene {
     export class Scene extends THREE.Object3D{
         private m_type = 'Scene';
-        private m_background = null;
+        private m_background: THREE.Color = null;
         private m_fog: Fog = null;
         private m_overrideMaterial = null;
         private m_autoUpdate: boolean = true; // checked by the renderer
@@ -16,6 +16,10 @@ namespace scene {
             return this.m_fog;
         }
 
+        set fog(val: Fog) {
+            this.m_fog = val;
+        }
+
         get overrideMaterial() {
             return this.m_overrideMaterial;
         }
@@ -24,17 +28,21 @@ namespace scene {
             return this.m_autoUpdate;
         }
 
-        get background() {
+        get background(): THREE.Color {
             return this.m_background;
+        }
+
+        set background(val: THREE.Color) {
+            this.m_background = val;
         }
 
         copy(source: Scene, recursive?: boolean): Scene {
             let that = this;
             super.copy(source, recursive);
-            if ( source.m_background !== null )
-                that.m_background = source.m_background.clone();
-            if ( source.m_fog !== null )
-                that.m_fog = source.m_fog.clone();
+            if ( source.background !== null )
+                that.background = source.background.clone();
+            if ( source.fog !== null )
+                that.fog = source.fog.clone();
             if ( source.m_overrideMaterial !== null )
                 this.m_overrideMaterial = source.m_overrideMaterial.clone();
     
