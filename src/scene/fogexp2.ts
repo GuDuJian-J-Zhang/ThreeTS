@@ -2,7 +2,7 @@
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
  */
 namespace scene {
-    export class FogExp2 {
+    export class FogExp2 implements IFog{
         private m_name: string = '';
         private m_color: THREE.Color = null;
         private m_density: number = 0.00025;
@@ -12,7 +12,15 @@ namespace scene {
             this.m_density = density;
         }
 
-        clone() {
+        get name(): string {
+            return this.m_name;
+        }
+
+        get color(): THREE.Color {
+            return this.m_color;
+        }
+
+        clone(): IFog{
             let that = this;
             return new FogExp2( that.m_color.getHex(), that.m_density );
         }

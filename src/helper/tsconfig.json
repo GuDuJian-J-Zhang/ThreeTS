@@ -1,11 +1,10 @@
 {
     "files": [
-        "fog_example.ts",
-        "main.ts"
+        "improved_noise.ts",
     ],
     "compilerOptions": {
         "module": "commonjs",
         "target": "es5",
-        "allowJs": true
+        "declaration": true
     }
 }

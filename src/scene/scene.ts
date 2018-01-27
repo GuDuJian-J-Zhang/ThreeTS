@@ -5,18 +5,18 @@ namespace scene {
     export class Scene extends THREE.Object3D{
         private m_type = 'Scene';
         private m_background: THREE.Color = null;
-        private m_fog: Fog = null;
+        private m_fog: IFog = null;
         private m_overrideMaterial = null;
         private m_autoUpdate: boolean = true; // checked by the renderer
         constructor() {
             super();
         }
 
-        get fog(): Fog {
+        get fog(): IFog {
             return this.m_fog;
         }
 
-        set fog(val: Fog) {
+        set fog(val: IFog) {
             this.m_fog = val;
         }
 
@@ -43,8 +43,8 @@ namespace scene {
                 that.background = source.background.clone();
             if ( source.fog !== null )
                 that.fog = source.fog.clone();
-            if ( source.m_overrideMaterial !== null )
-                this.m_overrideMaterial = source.m_overrideMaterial.clone();
+            if ( source.overrideMaterial !== null )
+                this.m_overrideMaterial = source.overrideMaterial.clone();
     
             that.m_autoUpdate = source.m_autoUpdate;
             that.matrixAutoUpdate = source.matrixAutoUpdate; ///< inherit from THREE.Object3D

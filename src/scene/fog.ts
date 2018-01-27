@@ -2,7 +2,14 @@
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
  */
 namespace scene {
-    export class Fog {
+    export interface IFog {
+        name: string;
+        color: THREE.Color;
+        clone(): IFog;
+        toJSON(): any;
+    }
+    
+    export class Fog implements IFog {
         private m_name: string = '';
         private m_color: THREE.Color = null;
         private m_near: number = 1;
@@ -30,7 +37,7 @@ namespace scene {
             return this.m_far;
         }
 
-        clone(): Fog {
+        clone(): IFog {
             let that = this;
             return new Fog( that.m_color.getHex(), that.m_near, that.m_far );
         }

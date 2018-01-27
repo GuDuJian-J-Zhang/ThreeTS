@@ -9,7 +9,7 @@ declare namespace scene {
         private m_overrideMaterial;
         private m_autoUpdate;
         constructor();
-        fog: Fog;
+        fog: IFog;
         readonly overrideMaterial: any;
         readonly autoUpdate: boolean;
         background: THREE.Color;
@@ -21,7 +21,13 @@ declare namespace scene {
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
  */
 declare namespace scene {
-    class Fog {
+    interface IFog {
+        name: string;
+        color: THREE.Color;
+        clone(): IFog;
+        toJSON(): any;
+    }
+    class Fog implements IFog {
         private m_name;
         private m_color;
         private m_near;
@@ -32,7 +38,7 @@ declare namespace scene {
         readonly color: THREE.Color;
         readonly near: number;
         readonly far: number;
-        clone(): Fog;
+        clone(): IFog;
         toJSON(): Object;
     }
 }
@@ -40,13 +46,15 @@ declare namespace scene {
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
  */
 declare namespace scene {
-    class FogExp2 {
+    class FogExp2 implements IFog {
         private m_name;
         private m_color;
         private m_density;
         private static s_isFogExp2;
         constructor(color: number, density?: number);
-        clone(): FogExp2;
+        readonly name: string;
+        readonly color: THREE.Color;
+        clone(): IFog;
         toJSON(): object;
     }
 }

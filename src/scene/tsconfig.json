@@ -1,8 +1,8 @@
 {
     "files": [
-        "scene/scene.ts",
-        "scene/fog.ts",
-        "scene/fogexp2.ts"
+        "scene.ts",
+        "fog.ts",
+        "fogexp2.ts"
     ],
     "compilerOptions": {
         "module": "commonjs",
