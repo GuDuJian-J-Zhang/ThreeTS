@@ -78,3 +78,10 @@ gulp.task("example", function() {
            .pipe(tsProjects())
            .js.pipe(gulp.dest("build/example"));
 });
+
+gulp.task("html", function() {
+    let htmlPath = "./example/html/*.html";
+    let htmlDist = "build/example";
+    gulp.src([htmlPath])
+        .pipe(gulp.dest(htmlDist));
+});
