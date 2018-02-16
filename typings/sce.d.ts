@@ -13,7 +13,7 @@ declare namespace scene {
         readonly overrideMaterial: any;
         readonly autoUpdate: boolean;
         background: THREE.Color;
-        copy(source: Scene, recursive?: boolean): Scene;
+        copy(source: Scene, recursive?: boolean): any;
         toJSON(meta: any): void;
     }
 }

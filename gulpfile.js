@@ -17,8 +17,8 @@ gulp.task("scene", function() {
 
     var tsSourceFile = tsFiles.src()
                               .pipe(header(separator + '// file: <%= file.path %>\n' + separator))
-                              .pipe(concat('scene' + '.ts'))
-                              .pipe(gulp.dest("./src"));
+                              .pipe(concat('sce' + '.ts'))
+                            //   .pipe(gulp.dest("./src"));
 
     var tsResults = tsSourceFile.pipe(sourcemaps.init())
                                 .pipe(tsOptions());
@@ -31,9 +31,9 @@ gulp.task("scene", function() {
             tsResults.js
                      .pipe(sourcemaps.write('.'))
                      .pipe(gulp.dest(destinationDir)),
-                     tsFiles.src()
+            tsFiles.src()
                      .pipe(header(separator + '// file: <%= file.path %>\n' + separator))
-                     .pipe(concat('scene' + '.ts'))
+                     .pipe(concat('sce' + '.ts'))
                      .pipe(gulp.dest(destinationDir)),
                      // tsSourceFile.pipe(clean())
         ]

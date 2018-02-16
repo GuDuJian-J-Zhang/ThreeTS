@@ -1,6 +1,7 @@
 {
     "files": [
-        "fog_example.ts",
+        // "fog_example.ts",
+        "scene_example.ts",
         "main.ts"
     ],
     "compilerOptions": {

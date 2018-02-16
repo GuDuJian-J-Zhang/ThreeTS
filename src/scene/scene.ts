@@ -36,9 +36,9 @@ namespace scene {
             this.m_background = val;
         }
 
-        copy(source: Scene, recursive?: boolean): Scene {
+        copy(source: Scene, recursive?: boolean): any {
             let that = this;
-            super.copy(source, recursive);
+            super.copy(<this>source, recursive);
             if ( source.background !== null )
                 that.background = source.background.clone();
             if ( source.fog !== null )
@@ -56,8 +56,8 @@ namespace scene {
             let that = this;
             let data = super.toJSON(meta);
     
-            if ( that.m_background !== null )
-                data.object.background = that.m_background.toJSON( meta );
+            // if ( that.m_background !== null )
+            //     data.object.background = that.m_background.toJSON( meta );
             if ( that.m_fog !== null )
                 data.object.fog = that.m_fog.toJSON();
     
