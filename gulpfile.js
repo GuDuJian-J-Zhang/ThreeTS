@@ -72,6 +72,38 @@ gulp.task("helper", function() {
     );
 });
 
+gulp.task("material", function() {
+    var sourceDir = "./src/material";
+    var typingsDir = "./typings";
+    var destinationDir = "./build/debug";
+    var tsOptions = typescript.createProject(sourceDir + "/tsconfig.json");
+    var tsFiles = typescript.createProject(sourceDir + "/tsconfig.json");
+
+    var tsSourceFile = tsFiles.src()
+                              .pipe(header(separator + '// file: <%= file.path %>\n' + separator))
+                              .pipe(concat('mat' + '.ts'));
+                            //   .pipe(gulp.dest("./src"));
+
+    var tsResults = tsSourceFile.pipe(sourcemaps.init())
+                                .pipe(tsOptions());
+
+    return merge(
+        [
+            tsResults.dts
+                    //  .pipe(replace(/\/\/\/ <reference path=.*\/>/g, ''))
+                     .pipe(gulp.dest(typingsDir)),
+            tsResults.js
+                     .pipe(sourcemaps.write('.'))
+                     .pipe(gulp.dest(destinationDir)),
+                     tsFiles.src()
+                     .pipe(header(separator + '// file: <%= file.path %>\n' + separator))
+                     .pipe(concat('mat' + '.ts'))
+                     .pipe(gulp.dest(destinationDir)),
+                     // tsSourceFile.pipe(clean())
+        ]
+    );
+});
+
 gulp.task("example", function() {
     var tsProjects = typescript.createProject("./example/tsconfig.json");
     return tsProjects.src()

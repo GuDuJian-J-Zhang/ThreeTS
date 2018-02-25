@@ -1,3 +1,4 @@
+/// <reference path='../typings/mat.d.ts' />
 namespace example {
 	export class DrawLinesExample {
 		private m_scene = new scene.Scene();
@@ -12,13 +13,16 @@ namespace example {
             that.m_camera.position.set( 0, 0, 100 );
             that.m_camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
-            let material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+            let line_mat = new material.LineBasicMaterial( { 
+				color: 0x0000ff,
+				linewidth: 5
+			} );
             let geometry = new THREE.Geometry();
             geometry.vertices.push(new THREE.Vector3( -10, 0, 0) );
             geometry.vertices.push(new THREE.Vector3( 0, 10, 0) );
             geometry.vertices.push(new THREE.Vector3( 10, 0, 0) );
             
-            that.m_lines = new THREE.Line( geometry, material );
+            that.m_lines = new THREE.Line( geometry, line_mat );
 			that.m_scene.add( that.m_lines );
             
 		}

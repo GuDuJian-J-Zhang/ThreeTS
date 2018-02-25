@@ -1,0 +1,10 @@
+{
+    "files": [
+        "line_basic_material.ts",
+    ],
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "declaration": true
+    }
+}

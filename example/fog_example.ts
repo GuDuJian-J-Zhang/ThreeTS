@@ -1,5 +1,5 @@
 // import * as THREE from "../../three.js/build/three"
-/// <reference path = "../typings/scene.d.ts" />
+/// <reference path = "../typings/sce.d.ts" />
 /// <reference path = "../typings/helper.d.ts" />
 namespace example {
 	export class FogExample {
