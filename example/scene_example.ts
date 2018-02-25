@@ -1,5 +1,5 @@
 // import * as THREE from "../../three.js/build/three"
-/// <reference path = "../typings/scene.d.ts" />
+/// <reference path = "../typings/sce.d.ts" />
 namespace example {
 	export class SceneExample {
 		private m_scene = new scene.Scene();
