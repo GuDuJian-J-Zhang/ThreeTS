@@ -58,3 +58,5 @@ declare namespace scene {
         toJSON(): object;
     }
 }
+
+export = scene;
