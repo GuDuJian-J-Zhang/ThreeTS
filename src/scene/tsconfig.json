@@ -5,6 +5,7 @@
         "fogexp2.ts"
     ],
     "compilerOptions": {
+        "outDir": "../../build/debug",
         "module": "commonjs",
         "target": "es5",
         "declaration": true
