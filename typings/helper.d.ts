@@ -7,9 +7,9 @@ declare namespace helper {
         private m_p;
         constructor();
         noise(x: number, y: number, z: number): number;
-        private init();
-        private fade(t);
-        private lerp(t, a, b);
-        private grad(hash, x, y, z);
+        private init;
+        private fade;
+        private lerp;
+        private grad;
     }
 }
