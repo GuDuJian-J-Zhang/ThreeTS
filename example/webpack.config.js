@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/scene/scene.ts',
+  entry: './main.ts',
   module: {
     rules: [
       {
@@ -16,7 +16,7 @@ module.exports = {
   },
   mode: "development",
   output: {
-    filename: 'sce.js',
-    path: path.resolve(__dirname, './build/debug'),
+    filename: 'scene_example.js',
+    path: path.resolve(__dirname, '../build/example'),
   },
 };

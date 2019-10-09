@@ -2,7 +2,7 @@
     "files": [
         // "fog_example.ts",
         "scene_example.ts",
-        "draw_lines_example.ts",
+        // "draw_lines_example.ts",
         "main.ts"
     ],
     "compilerOptions": {

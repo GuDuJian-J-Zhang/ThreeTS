@@ -5,13 +5,21 @@ import {IFog} from "./fog";
 import {THREE}  from '../3rd';
 
 export class Scene extends THREE.Object3D{
-    private m_type = 'Scene';
+    private m_type: 'Scene' = 'Scene';
     private m_background: THREE.Color = null;
     private m_fog: IFog = null;
     private m_overrideMaterial = null;
     private m_autoUpdate: boolean = true; // checked by the renderer
     constructor() {
         super();
+    }
+
+    get type(): 'Scene' {
+        return this.m_type;
+    }
+
+    set type(val: 'Scene') {
+        this.m_type = val;
     }
 
     get fog(): IFog {
@@ -65,4 +73,9 @@ export class Scene extends THREE.Object3D{
 
         return data;
     }
+
+    dispose(): void {
+        const that = this;
+		that.dispatchEvent( { type: 'dispose' } );
+	}
 }
