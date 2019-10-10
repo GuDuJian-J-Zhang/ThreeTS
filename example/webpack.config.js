@@ -8,11 +8,12 @@ let dir = './example';
 let files = fs.readdirSync(dir);
 
 files.forEach(file => {
+  const template = dir + '/' + 'template.pug'；
   if (file.match(/\.pug$/)) {
     let filename = file.substring(0, file.length - 4);
     templates.push(
       new HtmlWebpackPlugin({
-        template: dir + '/' + filename + '.pug',
+        template: template,
         filename: filename + '.html'
       })
     );
@@ -20,7 +21,9 @@ files.forEach(file => {
 });
 
 module.exports = {
-  entry: './scene_example.ts',
+  entry: [
+    './example/scene_example.ts'
+  ],
   module: {
     rules: [
       {
