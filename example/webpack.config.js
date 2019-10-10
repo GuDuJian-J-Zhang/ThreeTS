@@ -32,8 +32,15 @@ module.exports = {
         test: /\.pug$/,
         use: [
           "raw-loader",
-          "pug-html-loader"
-        ]
+          {
+            loader: "pug-html-loader",
+            options: {
+              data: {
+                name: 'scene_example'
+              }
+            }
+          }
+        ],
       }
     ],
   },
