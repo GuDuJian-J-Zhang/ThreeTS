@@ -2,7 +2,7 @@
 import {Scene} from '../src/scene/scene';
 import {THREE} from '../src/3rd';
 
-export class SceneExample {
+class SceneExample {
 	private m_scene = new Scene();
 	private m_camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 	private m_renderer = new THREE.WebGLRenderer();
@@ -29,4 +29,9 @@ export class SceneExample {
 
 		that.m_renderer.render(that.m_scene, that.m_camera);
 	};
+}
+
+window.onload = function () {
+    let scene = new SceneExample();
+    scene.animate();
 }
