@@ -1,6 +1,5 @@
-// import * as THREE from "../../three.js/build/three"
 import {Scene} from '../src/scene/scene';
-import {Fog} from '../src/scene/fog';
+import {ImprovedNoise} from '../src/helper/improved_noise';
 import {FogExp2} from '../src/scene/fogexp2';
 import {THREE} from '../src/3rd';
 
@@ -8,7 +7,7 @@ export class FogExample {
 	private m_scene: Scene;
 	private m_camera: THREE.PerspectiveCamera = null;
 	private m_renderer = new THREE.WebGLRenderer();
-	//private m_controls: THREE.FirstPersonControls = null;
+	private m_controls: THREE.FirstPersonControls = null;
 	private m_texture: THREE.CanvasTexture = undefined;
 	private m_clock = new THREE.Clock();
 	constructor() {
@@ -42,10 +41,10 @@ export class FogExample {
 		that.m_renderer.setPixelRatio( window.devicePixelRatio );
 		that.m_renderer.setSize( window.innerWidth, window.innerHeight );
 		
-		let container = document.getElementById( 'container' );
-		container.innerHTML = "";
-		container.appendChild( that.m_renderer.domElement );
-		
+		// let container = document.getElementById( 'container' );
+		// container.innerHTML = "";
+		// container.appendChild( that.m_renderer.domElement );
+		document.body.appendChild(that.m_renderer.domElement);
 		window.addEventListener( 'resize', that.onWindowResize, false );
 	}
 
@@ -68,7 +67,7 @@ export class FogExample {
 	private generateHeight( width, height ) {
 		let size = width * height;
 		let data = new Uint8Array( size );
-		let perlin: helper.ImprovedNoise = new helper.ImprovedNoise(), quality = 1, z = Math.random() * 100;
+		let perlin: ImprovedNoise = new ImprovedNoise(), quality = 1, z = Math.random() * 100;
 		for ( let j = 0; j < 4; j ++ ) {
 			for ( let i = 0; i < size; i ++ ) {
 				let x = i % width, y = ~~ ( i / width );
@@ -126,4 +125,9 @@ export class FogExample {
 		// that.m_controls.update( that.m_clock.getDelta() );
 		that.m_renderer.render( that.m_scene, that.m_camera );
 	}
+}
+
+window.onload = function () {
+    let fog = new FogExample();
+    fog.animate();
 }
