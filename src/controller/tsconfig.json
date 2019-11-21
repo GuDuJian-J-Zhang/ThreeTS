@@ -1,0 +1,10 @@
+{
+    "files": [
+        "first_person_controls.ts",
+    ],
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "declaration": true
+    }
+}

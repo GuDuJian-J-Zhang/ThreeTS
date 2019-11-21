@@ -1,0 +1,12 @@
+{
+    "files": [
+        "loader.ts",
+        "loading_manager.ts",
+        "nrrd_loader.ts",
+    ],
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "declaration": true
+    }
+}

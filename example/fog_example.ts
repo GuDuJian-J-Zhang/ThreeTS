@@ -1,21 +1,22 @@
 import {Scene} from '../src/scene/scene';
 import {ImprovedNoise} from '../src/helper/improved_noise';
 import {FogExp2} from '../src/scene/fogexp2';
+import {FirstPersonControls} from '../src/controller/first_person_controls';
 import {THREE} from '../src/3rd';
 
 export class FogExample {
 	private m_scene: Scene;
 	private m_camera: THREE.PerspectiveCamera = null;
 	private m_renderer = new THREE.WebGLRenderer();
-	private m_controls: THREE.FirstPersonControls = null;
+	private m_controls: FirstPersonControls = null;
 	private m_texture: THREE.CanvasTexture = undefined;
 	private m_clock = new THREE.Clock();
 	constructor() {
 		let that = this;
 		that.m_camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 10000 );
-		// that.m_controls = new THREE.FirstPersonControls( that.m_camera );
-		// that.m_controls.movementSpeed = 150;
-		// that.m_controls.lookSpeed = 0.1;
+		that.m_controls = new FirstPersonControls( that.m_camera );
+		that.m_controls.movementSpeed = 150;
+		that.m_controls.lookSpeed = 0.1;
 
 		that.m_scene = new Scene();
 		that.m_scene.background = new THREE.Color( 0xefd1b5 );
@@ -61,7 +62,7 @@ export class FogExample {
 		that.m_camera.aspect = window.innerWidth / window.innerHeight;
 		that.m_camera.updateProjectionMatrix();
 		that.m_renderer.setSize( window.innerWidth, window.innerHeight );
-		// that.m_controls.handleResize();
+		that.m_controls.handleResize();
 	}
 	
 	private generateHeight( width, height ) {
@@ -122,7 +123,7 @@ export class FogExample {
 	
 	private render(): void {
 		let that = this;
-		// that.m_controls.update( that.m_clock.getDelta() );
+		that.m_controls.update( that.m_clock.getDelta() );
 		that.m_renderer.render( that.m_scene, that.m_camera );
 	}
 }

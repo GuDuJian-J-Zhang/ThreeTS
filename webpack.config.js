@@ -60,5 +60,25 @@ module.exports = [
           filename: 'helper.js',
           path: path.resolve(__dirname, './build/debug'),
         },
+    },
+    {
+      entry: './src/loaders/nrrd_loader.ts',
+      module: {
+        rules: [
+          {
+            test: /\.ts?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/,
+          },
+        ],
+      },
+      resolve: {
+        extensions: [ '.ts'],
+      },
+      mode: "development",
+      output: {
+        filename: 'loader.js',
+        path: path.resolve(__dirname, './build/debug'),
+      }
     }
 ];
