@@ -363,7 +363,22 @@ export class Volume {
 		that.m_max = max;
 
 		return new THREE.Vector2(min, max);
-    }
+	}
+	
+	boundingBox(): THREE.Vector3 {
+		const that = this;
+		return new THREE.Vector3(that.m_x_length, that.m_y_length, that.m_z_length);
+	}
+
+	matrix(): THREE.Matrix4 {
+		const that = this;
+		return that.m_ijk2ras_matrix;
+	}
+
+	rasDimensions(): number[] {
+		const that = this;
+		return that.m_ras_dimensions;
+	}
     
     get data(): THREE.TypedArray {
         const that = this;

@@ -86,13 +86,13 @@ export class NrrdLoader extends Loader {
     private m_data: ArrayBuffer;
     private m_native_little_edian: boolean;
     private m_data_array_type;
-    constructor(manager: THREE.LoadingManager) {
+    constructor(manager?: THREE.LoadingManager) {
         super(manager);
         this.m_header_obj = <NrrdHeader>{};
         this.m_native_little_edian = new Int8Array( new Int16Array( [ 1 ] ).buffer )[ 0 ] > 0;
     }
 
-    load(url: string, onLoad, onProgress, onError ): void {
+    load(url: string, onLoad?: (volume: Volume) => void, onProgress?, onError? ): void {
         const that = this;
         const manager: THREE.LoadingManager = that.manager();
         const path = that.path();
@@ -100,9 +100,13 @@ export class NrrdLoader extends Loader {
         loader.setPath(path);
 		loader.setResponseType('arraybuffer');
 		loader.load(url, (data: ArrayBuffer) => {
-            const parsed_data = that.parse(data);
+            const parsed_data: Volume = that.parse(data);
 			onLoad(parsed_data);
 		}, onProgress, onError );
+    }
+
+    onLoad(data: Volume): void {
+
     }
 
     // this parser is largely inspired from the XTK NRRD parser : https://github.com/xtk/X

@@ -159,7 +159,12 @@ export class VolumeSlice {
         );
 
 		that.m_mesh.material["map"].needsUpdate = true;
-	}
+    }
+    
+    mesh(): THREE.Mesh {
+        const that = this;
+        return that.m_mesh;
+    }
 
     /**
     * Refresh the geometry according to axis and index
