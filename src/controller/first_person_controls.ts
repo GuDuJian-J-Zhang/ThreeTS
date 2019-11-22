@@ -145,7 +145,7 @@ export class FirstPersonControls {
             that.m_camera.translateY( - actualMoveSpeed );
         }
 
-		let actualLookSpeed = delta * this.lookSpeed;
+		let actualLookSpeed = delta * that.m_lookSpeed;
 
 		if ( !that.m_activeLook ) {
 			actualLookSpeed = 0;
