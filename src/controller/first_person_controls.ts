@@ -189,7 +189,6 @@ export class FirstPersonControls {
 
 		// window.removeEventListener( 'keydown', _onKeyDown, false );
 		// window.removeEventListener( 'keyup', _onKeyUp, false );
-
     }
 
     handleResize(): void {
@@ -351,6 +350,4 @@ export class FirstPersonControls {
         const that = this;
         that.m_lookSpeed = value;
     }
-
-    
 }
