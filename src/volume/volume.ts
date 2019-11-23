@@ -11,7 +11,6 @@ export enum EVolumeAxis {
 export interface IData4Extracted {
     iLength: number;
 	jLength: number;
-	sliceAccess: Function;
 	matrix: THREE.Matrix4;
 	planeWidth: number;
 	planeHeight: number;
@@ -32,7 +31,7 @@ export class Volume {
     private m_lower_threshold: number;
     private m_upper_threshold: number;
     private m_ras_dimensions: number[];
-    private m_slice_list: VolumeSlice[];
+    private m_slice_list: VolumeSlice[] = [];
     private m_nrrd_header: NrrdHeader;
     private m_data: THREE.TypedArray;
 
@@ -87,7 +86,7 @@ export class Volume {
 			const v = nrrd_header.space_directions;
 			this.m_ijk2ras_matrix.set(
 				_spaceX * v[ 0 ].x, _spaceX * v[ 1 ].x, _spaceX * v[ 2 ].x, 0,
-				_spaceY * v[ 0 ].y, _spaceY * v[ 1 ].x, _spaceY * v[ 2 ].x, 0,
+				_spaceY * v[ 0 ].y, _spaceY * v[ 1 ].y, _spaceY * v[ 2 ].y, 0,
 				_spaceZ * v[ 0 ].z, _spaceZ * v[ 1 ].z, _spaceZ * v[ 2 ].z, 0,
 				0, 0, 0, 1 );
 		}
@@ -187,8 +186,7 @@ export class Volume {
         const that = this;
         let planeMatrix = new THREE.Matrix4();
         planeMatrix.identity();
-		var 
-			firstSpacing,
+		let firstSpacing,
 			secondSpacing,
 			positionOffset;
 
@@ -201,7 +199,6 @@ export class Volume {
                                     that.m_y_length, 
                                     that.m_z_length
                            );
-        let IJKIndex: THREE.Vector3;
 		switch (axis) {
 			case EVolumeAxis.X :
 				axisInIJK.set( 1, 0, 0 );
@@ -209,7 +206,6 @@ export class Volume {
 				secondDirection.set( 0, - 1, 0 );
 				firstSpacing = that.m_spacing[ 2 ];
 				secondSpacing = that.m_spacing[ 1 ];
-				IJKIndex = new THREE.Vector3( RASIndex, 0, 0 );
 
 				planeMatrix.multiply( ( new THREE.Matrix4() ).makeRotationY( Math.PI / 2 ) );
 				positionOffset = ( that.m_ras_dimensions[ 0 ] - 1 ) / 2;
@@ -221,7 +217,6 @@ export class Volume {
 				secondDirection.set( 0, 0, 1 );
 				firstSpacing = that.m_spacing[ 0 ];
 				secondSpacing = that.m_spacing[ 2 ];
-				IJKIndex = new THREE.Vector3( 0, RASIndex, 0 );
 
 				planeMatrix.multiply( ( new THREE.Matrix4() ).makeRotationX( - Math.PI / 2 ) );
 				positionOffset = ( that.m_ras_dimensions[ 1 ] - 1 ) / 2;
@@ -233,9 +228,8 @@ export class Volume {
 				firstDirection.set( 1, 0, 0 );
 				secondDirection.set( 0, - 1, 0 );
 				firstSpacing = that.m_spacing[ 0 ];
-				secondSpacing = that.m_spacing[ 1 ];
-				IJKIndex = new THREE.Vector3( 0, 0, RASIndex );
-
+                secondSpacing = that.m_spacing[ 1 ];
+                
 				positionOffset = ( that.m_ras_dimensions[ 2 ] - 1 ) / 2;
 				planeMatrix.setPosition( new THREE.Vector3( 0, 0, RASIndex - positionOffset ) );
 				break;
@@ -253,58 +247,9 @@ export class Volume {
 		const planeWidth: number = Math.abs( iLength * firstSpacing );
 		const planeHeight: number = Math.abs( jLength * secondSpacing );
 
-		//IJKIndex = Math.abs( Math.round( IJKIndex.applyMatrix4( that.inverseMatrix ).dot( axisInIJK ) ) );
-		const base = [ 
-            new THREE.Vector3( 1, 0, 0 ), 
-            new THREE.Vector3( 0, 1, 0 ), 
-            new THREE.Vector3( 0, 0, 1 ) 
-        ];
-		const iDirection = [ 
-            firstDirection, 
-            secondDirection, 
-            axisInIJK 
-        ].find((dir: THREE.Vector3) => {
-			return Math.abs( dir.dot( base[ 0 ] ) ) > 0.9;
-        } );
-        
-		const jDirection = [ 
-            firstDirection, 
-            secondDirection, 
-            axisInIJK 
-        ].find((dir: THREE.Vector3) => {
-			return Math.abs( dir.dot( base[ 1 ] ) ) > 0.9;
-        } );
-        
-		const kDirection = [ 
-            firstDirection, 
-            secondDirection, 
-            axisInIJK 
-        ].find((dir: THREE.Vector3) => {
-			return Math.abs( dir.dot( base[ 2 ] ) ) > 0.9;
-        } );
-        
-		const argumentsWithInversion = [ 
-            'volume.xLength-1-', 
-            'volume.yLength-1-', 
-            'volume.zLength-1-' 
-        ];
-		const argArray: string[] = [ 
-            iDirection, 
-            jDirection, 
-            kDirection 
-        ].map(( direction, n ) => {
-            return ( direction.dot( base[ n ] ) > 0 ? '' : argumentsWithInversion[ n ] )
-                 + ( direction === axisInIJK ? 'IJKIndex' : map_dir_argVar.get(direction) );
-        } );
-        
-		const argString = argArray.join( ',' );
-		const sliceAccess = eval( '(function sliceAccess (i,j) {return volume.access( ' + argString + ');})' );
-
-
 		return {
 			iLength: iLength,
 			jLength: jLength,
-			sliceAccess: sliceAccess,
 			matrix: planeMatrix,
 			planeWidth: planeWidth,
 			planeHeight: planeHeight

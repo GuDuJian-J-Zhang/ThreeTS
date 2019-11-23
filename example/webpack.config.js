@@ -21,7 +21,14 @@ files.forEach(file => {
         rules: [
           {
             test: /\.ts?$/,
-            use: 'ts-loader',
+            use: [
+              {
+                loader: 'ts-loader',
+                options: {
+                  configFile: path.resolve(__dirname, 'tsconfig.json')
+                }
+              }
+            ],
             exclude: /node_modules/,
           },
           {

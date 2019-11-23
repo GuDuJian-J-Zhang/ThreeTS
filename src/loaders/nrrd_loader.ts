@@ -2,7 +2,7 @@
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
  */
 import {Loader} from './loader';
-import {THREE}  from '../3rd';
+import { THREE, Pako }  from '../3rd';
 import { Volume } from '../volume/volume';
 
 enum NrrdEncoding {
@@ -143,8 +143,7 @@ export class NrrdLoader extends Loader {
         ) {
 			// we need to decompress the datastream
 			// here we start the unzipping and get a typed Uint8Array back
-			// var inflate = new Zlib.Gunzip( new Uint8Array( _data ) ); // eslint-disable-line no-undef
-			// _data = inflate.decompress();
+			the_array_data = Pako.inflate( new Uint8Array( the_array_data ) ); // eslint-disable-line no-undef
 
         } else if (that.m_header_obj.encoding === "ascii" 
                    || that.m_header_obj.encoding === "text" 
@@ -302,6 +301,56 @@ export class NrrdLoader extends Loader {
 
     private setDataType(data_type: string): void {
         const that = this;
+        switch (data_type) {
+
+            case NrrdDataArrayType.UCHAR:
+            case NrrdDataArrayType.UNSIGNED_CHAR:
+            case NrrdDataArrayType.UINT8:
+            case NrrdDataArrayType.UINT8_T:
+                that.m_data_array_type = Uint8Array;
+                break;
+            case NrrdDataArrayType.SIGNED_CHAR:
+            case NrrdDataArrayType.INT8:
+            case NrrdDataArrayType.INT8_T:
+                that.m_data_array_type = Int8Array;
+                break;
+            case NrrdDataArrayType.SHORT:
+            case NrrdDataArrayType.SHORT_INT:
+            case NrrdDataArrayType.SIGNED_INT:
+            case NrrdDataArrayType.SIGNED_SHORT_INT:
+            case NrrdDataArrayType.INT16:
+            case NrrdDataArrayType.INT16_T:
+                that.m_data_array_type = Int16Array;
+                break;
+            case NrrdDataArrayType.USHORT:
+            case NrrdDataArrayType.UNSIGNED_SHORT:
+            case NrrdDataArrayType.UNSIGNED_SHORT_INT:
+            case NrrdDataArrayType.UINT16:
+            case NrrdDataArrayType.UINT16_T:
+                that.m_data_array_type = Uint16Array;
+                break;
+            case NrrdDataArrayType.INT:
+            case NrrdDataArrayType.SIGNED_INT:
+            case NrrdDataArrayType.INT32:
+            case NrrdDataArrayType.INT32_T:
+                that.m_data_array_type = Int32Array;
+                break;
+            case NrrdDataArrayType.UINT:
+            case NrrdDataArrayType.UNSIGNED_INT:
+            case NrrdDataArrayType.UINT32:
+            case NrrdDataArrayType.UINT32_T:
+                that.m_data_array_type = Uint32Array;
+                break;
+            case NrrdDataArrayType.FLOAT:
+                that.m_data_array_type = Float32Array;
+                break;
+            case NrrdDataArrayType.DOUBLE:
+                that.m_data_array_type = Float64Array;
+                break;
+            default:
+                throw new Error( 'Unsupported NRRD data type: ' + data_type );
+
+        }
         that.m_header_obj.type = <NrrdDataArrayType>data_type;
     }
 
@@ -400,6 +449,7 @@ export class NrrdLoader extends Loader {
         switch ( type ) {
             // 1 byte data types
             case 'uchar':
+                array_type = Uint8Array
                 break;
             case 'schar':
                 array_type = Int8Array;
@@ -435,8 +485,6 @@ export class NrrdLoader extends Loader {
                 chunk_size = 8;
                 break;
         }
-
-        that.m_data_array_type = array_type;
 
         // increase the data pointer in-place
         const start_index: number = that.m_data_pointer;

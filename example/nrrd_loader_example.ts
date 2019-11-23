@@ -11,8 +11,8 @@ class NrrdLoaderExample {
     // private m_controls: TrackballControls;
 	constructor() {
 		let that = this;
-		that.m_renderer.setSize( window.innerWidth, window.innerHeight );
-		document.body.appendChild( that.m_renderer.domElement );
+		// that.m_renderer.setSize( window.innerWidth, window.innerHeight );
+		// document.body.appendChild( that.m_renderer.domElement );
         
         that.m_camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 1e10 );
 		that.m_camera.position.set( 0, 0, 100 );
@@ -65,7 +65,7 @@ class NrrdLoaderExample {
     private loadData(): void {
         const that = this;
         var loader = new NrrdLoader();
-		loader.load( "models/nrrd/I.nrrd", (volume: Volume): void => {
+		loader.load( "http://localhost:8000/nrrd/test.nrrd", (volume: Volume): void => {
             const volume_bbox: THREE.Vector3 = volume.boundingBox();
 		    //box helper to see the extend of the volume
 		    const geometry = new THREE.BoxBufferGeometry( 
