@@ -21,14 +21,7 @@ files.forEach(file => {
         rules: [
           {
             test: /\.ts?$/,
-            use: [
-              {
-                loader: 'ts-loader',
-                options: {
-                  configFile: path.resolve(__dirname, 'tsconfig.json')
-                }
-              }
-            ],
+            use: 'ts-loader',
             exclude: /node_modules/,
           },
           {
@@ -55,7 +48,7 @@ files.forEach(file => {
         new HtmlWebpackPugPlugin()
       ],
       resolve: {
-        extensions: [ '.ts'],
+        extensions: [ '.ts', '.js'],
       },
       mode: "development",
       output: {
