@@ -234,13 +234,11 @@ export class Volume {
 				planeMatrix.setPosition( new THREE.Vector3( 0, 0, RASIndex - positionOffset ) );
 				break;
         }
-        
-        let map_dir_argVar = new Map<THREE.Vector3, string>();
 
 		firstDirection.applyMatrix4( that.m_inverse_matrix_of_ijk2ras ).normalize();
-        map_dir_argVar.set(firstDirection, "i");
+        
 		secondDirection.applyMatrix4( that.m_inverse_matrix_of_ijk2ras ).normalize();
-        map_dir_argVar.set(secondDirection, "j");
+        
 		axisInIJK.applyMatrix4( that.m_inverse_matrix_of_ijk2ras ).normalize();
 		const iLength: number = Math.floor( Math.abs( firstDirection.dot( dimensions ) ) );
 		const jLength: number = Math.floor( Math.abs( secondDirection.dot( dimensions ) ) );
@@ -310,7 +308,7 @@ export class Volume {
 		return new THREE.Vector2(min, max);
 	}
 	
-	boundingBox(): THREE.Vector3 {
+	xyzLength(): THREE.Vector3 {
 		const that = this;
 		return new THREE.Vector3(that.m_x_length, that.m_y_length, that.m_z_length);
 	}

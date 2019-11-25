@@ -30,11 +30,11 @@ class NrrdLoaderExample {
 		that.m_renderer.setPixelRatio( window.devicePixelRatio );
 		that.m_renderer.setSize( window.innerWidth, window.innerHeight );
         
-        document.body.appendChild(that.m_renderer.domElement);
+        // document.body.appendChild(that.m_renderer.domElement);
         
-        // container = document.createElement( 'div' );
-		// document.body.appendChild( container );
-		// container.appendChild(that.m_renderer.domElement );
+        let container = document.createElement( 'div' );
+		document.body.appendChild( container );
+		container.appendChild(that.m_renderer.domElement );
         
         // that.m_controls = new TrackballControls(
         //     that.m_camera, 
@@ -66,12 +66,12 @@ class NrrdLoaderExample {
         const that = this;
         var loader = new NrrdLoader();
 		loader.load( "http://localhost:8000/nrrd/test.nrrd", (volume: Volume): void => {
-            const volume_bbox: THREE.Vector3 = volume.boundingBox();
+            const volume_xyz: THREE.Vector3 = volume.xyzLength();
 		    //box helper to see the extend of the volume
 		    const geometry = new THREE.BoxBufferGeometry( 
-                volume_bbox.x, 
-                volume_bbox.y, 
-                volume_bbox.z
+                volume_xyz.x, 
+                volume_xyz.y, 
+                volume_xyz.z
             );
 		    const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 		    const cube = new THREE.Mesh( geometry, material );
@@ -84,17 +84,17 @@ class NrrdLoaderExample {
             
             const ras_dimension: number[] = volume.rasDimensions();
             //z plane
-		    const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, Math.floor( ras_dimension[ 2 ] / 4 ) );
-            const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
-            that.m_scene.add(slice_z_mesh);
+		    // const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, Math.floor( ras_dimension[ 2 ] / 4 ) );
+            // const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
+            // that.m_scene.add(slice_z_mesh);
 		    //y plane
 		    const sliceY: VolumeSlice = volume.extractSlice(EVolumeAxis.Y, Math.floor( ras_dimension[ 1 ] / 2 ) );
             const slice_y_mesh: THREE.Mesh = sliceY.mesh();
             that.m_scene.add(slice_y_mesh);
 		    //x plane
-		    const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, Math.floor( ras_dimension[ 0 ] / 2 ) );
-            const slice_x_mesh: THREE.Mesh = sliceX.mesh();
-            that.m_scene.add(slice_x_mesh);
+		    // const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, Math.floor( ras_dimension[ 0 ] / 2 ) );
+            // const slice_x_mesh: THREE.Mesh = sliceX.mesh();
+            // that.m_scene.add(slice_x_mesh);
 	    } );
     }
 

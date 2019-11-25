@@ -134,8 +134,8 @@ export class VolumeSlice {
 			}
 		} else {
 
-			for ( let j = 0; j < 256; j ++ ) {
-				for ( let i = 0; i < 113; i ++ ) {
+			for ( let j = 0; j < jLength; j ++ ) {
+				for ( let i = 0; i < iLength; i ++ ) {
                     const index: number = that.sliceAccess(i,j);
 					let value = volumeData[index];
 					let alpha = 0xff;
@@ -161,12 +161,12 @@ export class VolumeSlice {
         }
 
 		that.m_ctx_buffer.putImageData( imgData, 0, 0 );
-		that.m_ctx_buffer.drawImage( 
+		that.m_ctx.drawImage( 
             that.m_canvas_buffer, 0, 0, iLength, jLength, 
             0, 0, that.m_canvas.width, that.m_canvas.height 
         );
 
-		that.m_mesh.material["map"].needsUpdate = true;
+		(<THREE.MeshBasicMaterial>that.m_mesh.material).map.needsUpdate = true;
     }
     
     mesh(): THREE.Mesh {
@@ -212,19 +212,19 @@ export class VolumeSlice {
         let index_x: number = 0;
         let index_y: number = 0;
         let index_z: number = 0;
-        // const volume_bbox: THREE.Vector3 = that.m_volume.boundingBox();
+        const volume_xyz: THREE.Vector3 = that.m_volume.xyzLength();
         if (that.m_axis === EVolumeAxis.X) {
-            index_x = 256 - 1 - 128;
-            index_y = 256 - j - 1;
+            index_x = volume_xyz.x - 1 - that.m_index;
+            index_y = volume_xyz.y - 1 - j;
             index_z = i;
         } else if (that.m_axis === EVolumeAxis.Y) {
-            index_x = that.m_extracted.iLength - i - 1;
+            index_x = volume_xyz.x - i - 1;
             index_y = that.m_index;
-            index_z = that.m_extracted.jLength - j - 1;
+            index_z = volume_xyz.z - j - 1;
         } else if (that.m_axis === EVolumeAxis.Z) {
-            index_x = that.m_extracted.iLength - i - 1;
-            index_y = that.m_extracted.jLength - j - 1;
-            // index_z = that.m_extracted.zLength - that.m_index - 1;
+            index_x = volume_xyz.x - 1 - i;
+            index_y = volume_xyz.y - 1 - j;
+            index_z = volume_xyz.z - 1 - that.m_index;
         }
         return that.m_volume.access(index_x, index_y, index_z);
     }
