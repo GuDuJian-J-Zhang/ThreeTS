@@ -4,11 +4,12 @@ import {NrrdLoader} from '../src/loaders/nrrd_loader';
 import {THREE} from '../src/3rd';
 import { Volume, EVolumeAxis } from '../src/volume/volume';
 import { VolumeSlice } from '../src/volume/volume_slice';
+import { TrackballControls } from '../src/controller/trackball_controls';
 class NrrdLoaderExample {
 	private m_scene: Scene;
 	private m_camera: THREE.PerspectiveCamera;
     private m_renderer: THREE.WebGLRenderer;
-    // private m_controls: TrackballControls;
+    private m_controls: TrackballControls;
 	constructor() {
 		let that = this;
 		// that.m_renderer.setSize( window.innerWidth, window.innerHeight );
@@ -36,17 +37,17 @@ class NrrdLoaderExample {
 		document.body.appendChild( container );
 		container.appendChild(that.m_renderer.domElement );
         
-        // that.m_controls = new TrackballControls(
-        //     that.m_camera, 
-        //     that.m_renderer.domElement
-        // );
-		// that.m_controls.rotateSpeed = 5.0;
-		// that.m_controls.zoomSpeed = 5;
-		// that.m_controls.panSpeed = 2;
-		// that.m_controls.noZoom = false;
-		// that.m_controls.noPan = false;
-		// that.m_controls.staticMoving = true;
-		// that.m_controls.dynamicDampingFactor = 0.3;
+        that.m_controls = new TrackballControls(
+            that.m_camera, 
+            that.m_renderer.domElement
+        );
+		that.m_controls.rotateSpeed = 5.0;
+		that.m_controls.zoomSpeed = 5;
+		that.m_controls.panSpeed = 2;
+		that.m_controls.noZoom = false;
+		that.m_controls.noPan = false;
+		that.m_controls.staticMoving = true;
+		that.m_controls.dynamicDampingFactor = 0.3;
 		
 		window.addEventListener( 'resize', () => {
             that.onWindowResize();
@@ -103,7 +104,7 @@ class NrrdLoaderExample {
         that.m_camera.aspect = window.innerWidth / window.innerHeight;
         that.m_camera.updateProjectionMatrix();
         that.m_renderer.setSize( window.innerWidth, window.innerHeight );
-        // that.m_controls.handleResize();
+        that.m_controls.handleResize();
     }
 }
 

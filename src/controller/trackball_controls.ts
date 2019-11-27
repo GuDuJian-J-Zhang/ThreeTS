@@ -2,7 +2,6 @@
  * @author gudujian / zhangjun_dg@mail.dlut.edu.cn/
  */
 import {THREE}  from '../3rd';
-import { ThrowStatement } from 'babel-types';
 
 interface IData4SceenSize {
     left: number;
@@ -32,7 +31,7 @@ const endEvent = { type: 'end' };
 
 export type PerspectiveOrOrth = THREE.PerspectiveCamera | THREE.OrthographicCamera;
 
-export class TrackballControls {
+export class TrackballControls extends THREE.EventDispatcher {
     private m_camera: PerspectiveOrOrth; // The camera to be controlled
     private m_domElement: HTMLElement; // The HTML element used for event listeners
     private m_enabled: boolean;
@@ -72,6 +71,8 @@ export class TrackballControls {
     private m_zoom0: number;
 
     constructor(camera: PerspectiveOrOrth, domElement: HTMLElement) {
+        super();
+
         const that = this;
         that.m_camera = camera;
         that.m_domElement = domElement;
@@ -145,7 +146,72 @@ export class TrackballControls {
 
     private initialize(): void {
         const that = this;
-        
+        that.m_domElement.addEventListener( 'contextmenu', (ev: MouseEvent) => {
+            that.contextmenu(ev);
+        }, false );
+	    that.m_domElement.addEventListener( 'mousedown', (ev: MouseEvent) => {
+            that.mousedown(ev);
+        }, false );
+	    that.m_domElement.addEventListener( 'wheel', (ev: WheelEvent) => {
+            that.mousewheel(ev);
+        }, false );
+    
+	    that.m_domElement.addEventListener( 'touchstart', (ev: TouchEvent) => {
+            that.touchstart(ev);
+        }, false );
+	    that.m_domElement.addEventListener( 'touchend', (ev: TouchEvent) => {
+            that.touchend(ev);
+        }, false );
+	    that.m_domElement.addEventListener( 'touchmove', (ev: TouchEvent) => {
+            that.touchmove(ev);
+        }, false );
+    
+	    window.addEventListener( 'keydown', (ev: KeyboardEvent) => {
+            that.keydown(ev);
+        }, false );
+	    window.addEventListener( 'keyup', (ev: KeyboardEvent) => {
+            that.keyup();
+        }, false );
+    
+	    this.handleResize();
+    
+	    // force an update at start
+	    this.update();
+    }
+
+    set rotateSpeed(value: number) {
+        const that = this;
+        that.m_rotate_speed = value;
+    }
+
+    set zoomSpeed(value: number) {
+        const that = this;
+        that.m_zoom_speed = value;
+    }
+
+    set panSpeed(value: number) {
+        const that = this;
+        that.m_pan_speed = value;
+    }
+
+    set noZoom(value: boolean) {
+        const that = this;
+        that.m_no_zoom = value;
+    }
+
+    set noPan(value: boolean) {
+        const that = this;
+        that.m_no_pan = value;
+    }
+
+    set staticMoving(value: boolean) {
+        const that = this;
+        that.m_static_moving = value;
+    }
+
+    set dynamicDampingFactor(value: number) {
+        const that = this;
+        that.m_dynamic_damping_factor = value;
     }
 
     handleResize(): void {
@@ -413,5 +479,296 @@ export class TrackballControls {
 		} else if ( event.keyCode === that.m_keys[ EState.PAN ] && ! that.m_no_pan ) {
 			that.m_key_state = EState.PAN;
 		}
+    }
+    
+    keyup(): void {
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		that.m_key_state = EState.NONE;
+
+		window.addEventListener( 'keydown', (event) => {
+            that.keydown(event);
+        }, false );
+    }
+    
+    mousedown(event: MouseEvent): void {
+        const that = this;
+
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		if ( that.m_state === EState.NONE ) {
+
+			switch ( event.button ) {
+
+				case that.m_mouse_buttons.LEFT:
+					that.m_state = EState.ROTATE;
+					break;
+
+				case that.m_mouse_buttons.MIDDLE:
+					that.m_state = EState.ZOOM;
+					break;
+
+				case that.m_mouse_buttons.RIGHT:
+					that.m_state = EState.PAN;
+					break;
+
+				default:
+					that.m_state = EState.NONE;
+			}
+		}
+
+        const state = ( that.m_key_state !== EState.NONE ) ? 
+                      that.m_key_state : that.m_state;
+
+		if ( state === EState.ROTATE && ! that.m_no_rotate ) {
+
+            const mouse_pos: THREE.Vector2 = that.getMouseOnCircle( event.pageX, event.pageY );
+			that.m_move_curr.copy( mouse_pos );
+			that.m_move_prev.copy( that.m_move_curr );
+
+		} else if ( state === EState.ZOOM && ! that.m_no_zoom ) {
+
+            const mouse_pos: THREE.Vector2 = that.getMouseOnScreen( event.pageX, event.pageY );
+			that.m_zoom_start.copy( mouse_pos );
+			that.m_zoom_end.copy( that.m_zoom_start );
+
+		} else if ( state === EState.PAN && ! that.m_no_pan ) {
+
+            const mouse_pos: THREE.Vector2 = that.getMouseOnScreen( event.pageX, event.pageY );
+			that.m_pan_start.copy( mouse_pos );
+			that.m_pan_end.copy( that.m_pan_start );
+
+		}
+
+		document.addEventListener( 'mousemove', (ev: MouseEvent) => {
+            that.mousemove(ev);
+        }, false );
+		document.addEventListener( 'mouseup', (ev: MouseEvent) => {
+            that.mouseup(ev);
+        }, false );
+
+		that.dispatchEvent( startEvent );
+    }
+    
+    mousemove(event: MouseEvent): void {
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		event.preventDefault();
+		event.stopPropagation();
+
+        const state = ( that.m_key_state !== EState.NONE ) ? 
+                       that.m_key_state : that.m_state;
+
+		if ( state === EState.ROTATE && ! that.m_no_rotate ) {
+
+            that.m_move_prev.copy( that.m_move_curr );
+            const mouse_pos: THREE.Vector2 = that.getMouseOnCircle( event.pageX, event.pageY );
+			that.m_move_curr.copy( mouse_pos );
+
+		} else if ( state === EState.ZOOM && ! that.m_no_zoom ) {
+
+            const mouse_pos: THREE.Vector2 = that.getMouseOnScreen( event.pageX, event.pageY );
+			that.m_zoom_end.copy( mouse_pos );
+
+		} else if ( state === EState.PAN && ! that.m_no_pan ) {
+
+            const mouse_pos: THREE.Vector2 = that.getMouseOnScreen( event.pageX, event.pageY );
+			that.m_pan_end.copy( mouse_pos );
+
+		}
+    }
+    
+    mouseup(event: MouseEvent): void {
+
+        const that = this;
+
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		that.m_state = EState.NONE;
+
+		document.removeEventListener( 'mousemove', (ev: MouseEvent) => {
+            that.mousemove(ev);
+        } );
+		document.removeEventListener( 'mouseup', (ev: MouseEvent) => {
+            that.mouseup(ev);
+        } );
+		that.dispatchEvent( endEvent );
+    }
+    
+    mousewheel(event: WheelEvent): void {
+
+        const that = this;
+
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		if ( that.m_no_zoom === true ) {
+            return;
+        }
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		switch ( event.deltaMode ) {
+
+			case 2:
+				// Zoom in pages
+				that.m_zoom_start.y -= event.deltaY * 0.025;
+				break;
+
+			case 1:
+				// Zoom in lines
+				that.m_zoom_start.y -= event.deltaY * 0.01;
+				break;
+
+			default:
+				// undefined, 0, assume pixels
+				that.m_zoom_start.y -= event.deltaY * 0.00025;
+				break;
+
+		}
+
+		that.dispatchEvent( startEvent );
+		that.dispatchEvent( endEvent );
+    }
+    
+    touchstart(event: TouchEvent): void {
+
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		event.preventDefault();
+
+		switch ( event.touches.length ) {
+
+			case 1:
+                that.m_state = EState.TOUCH_ROTATE;
+                const mouse_pos1: THREE.Vector2 = that.getMouseOnCircle( 
+                    event.touches[ 0 ].pageX, event.touches[ 0 ].pageY 
+                );
+				that.m_move_curr.copy( mouse_pos1 );
+				that.m_move_prev.copy( that.m_move_curr );
+				break;
+
+			default: // 2 or more
+				that.m_state = EState.TOUCH_ZOOM_PAN;
+				const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+				that.m_touch_zoom_distance_end = that.m_touch_zoom_distance_start = Math.sqrt( dx * dx + dy * dy );
+
+				const x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
+				const y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
+                const mouse_pos2: THREE.Vector2 = that.getMouseOnScreen( x, y );
+                that.m_pan_start.copy( mouse_pos2 );
+				that.m_pan_end.copy( that.m_pan_start );
+				break;
+
+		}
+		that.dispatchEvent( startEvent );
+    }
+    
+    touchmove(event: TouchEvent): void {
+
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		switch ( event.touches.length ) {
+
+			case 1:
+                that.m_move_prev.copy( that.m_move_curr );
+                const mouse_pos1: THREE.Vector2 = that.getMouseOnCircle( 
+                    event.touches[ 0 ].pageX, event.touches[ 0 ].pageY 
+                );
+				that.m_move_curr.copy( mouse_pos1 );
+				break;
+
+			default: // 2 or more
+				const dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+				const dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+				that.m_touch_zoom_distance_end = Math.sqrt( dx * dx + dy * dy );
+
+				const x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
+				const y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
+                const mouse_pos2: THREE.Vector2 = that.getMouseOnScreen( x, y );
+                that.m_pan_end.copy( mouse_pos2 );
+				break;
+		}
+    }
+    
+    touchend(event: TouchEvent): void {
+
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		switch ( event.touches.length ) {
+
+			case 0:
+				that.m_state = EState.NONE;
+				break;
+
+			case 1:
+                that.m_state = EState.TOUCH_ROTATE;
+                const mouse_pos: THREE.Vector2 = that.getMouseOnCircle( 
+                    event.touches[ 0 ].pageX, event.touches[ 0 ].pageY 
+                );
+				that.m_move_curr.copy( mouse_pos );
+				that.m_move_prev.copy( that.m_move_curr );
+				break;
+		}
+		that.dispatchEvent( endEvent );
+    }
+    
+    contextmenu(event: MouseEvent): void {
+
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+		event.preventDefault();
+    }
+    
+    dispose(): void {
+
+        const that = this;
+		// that.m_domElement.removeEventListener( 'contextmenu', contextmenu, false );
+		// that.m_domElement.removeEventListener( 'mousedown', mousedown, false );
+		// that.m_domElement.removeEventListener( 'wheel', mousewheel, false );
+
+		// that.m_domElement.removeEventListener( 'touchstart', touchstart, false );
+		// that.m_domElement.removeEventListener( 'touchend', touchend, false );
+		// that.m_domElement.removeEventListener( 'touchmove', touchmove, false );
+
+		// document.removeEventListener( 'mousemove', mousemove, false );
+		// document.removeEventListener( 'mouseup', mouseup, false );
+
+		// window.removeEventListener( 'keydown', keydown, false );
+		// window.removeEventListener( 'keyup', keyup, false );
+
 	}
 }
