@@ -26,8 +26,14 @@ enum EState {
     TOUCH_ZOOM_PAN = 4
 }
 
+const changeEvent = { type: 'change' };
+const startEvent = { type: 'start' };
+const endEvent = { type: 'end' };
+
+export type PerspectiveOrOrth = THREE.PerspectiveCamera | THREE.OrthographicCamera;
+
 export class TrackballControls {
-    private m_camera: THREE.Camera; // The camera to be controlled
+    private m_camera: PerspectiveOrOrth; // The camera to be controlled
     private m_domElement: HTMLElement; // The HTML element used for event listeners
     private m_enabled: boolean;
     private m_screen: IData4SceenSize;
@@ -63,11 +69,11 @@ export class TrackballControls {
     private m_target0: THREE.Vector3;
     private m_position0: THREE.Vector3;
     private m_up0: THREE.Vector3;
-    private m_zoom0: THREE.Vector3;
+    private m_zoom0: number;
 
-    constructor(object: THREE.Camera, domElement: HTMLElement) {
+    constructor(camera: PerspectiveOrOrth, domElement: HTMLElement) {
         const that = this;
-        that.m_camera = object;
+        that.m_camera = camera;
         that.m_domElement = domElement;
         that.m_enabled = true;
         that.m_screen = {
@@ -132,14 +138,7 @@ export class TrackballControls {
 	    that.m_target0 = that.m_target.clone();
 	    that.m_position0 = that.m_camera.position.clone();
 	    that.m_up0 = that.m_camera.up.clone();
-	    // that.m_zoom0 = that.m_object.zoom;
-    
-	    // events
-    
-	    var changeEvent = { type: 'change' };
-	    var startEvent = { type: 'start' };
-	    var endEvent = { type: 'end' };
-
+	    that.m_zoom0 = that.m_camera.zoom;
 
         that.initialize();
     }
@@ -270,6 +269,149 @@ export class TrackballControls {
 			} else {
 				that.m_zoom_start.y += ( that.m_zoom_end.y - that.m_zoom_start.y ) * that.m_dynamic_damping_factor;
 			}
+		}
+    }
+    
+    panCamera(): void {
+        const that = this;
+
+        let mouseChange = new THREE.Vector2();
+		let	objectUp = new THREE.Vector3();
+        let pan = new THREE.Vector3();
+   
+        mouseChange.copy( that.m_pan_end ).sub( that.m_pan_start );
+
+        if ( mouseChange.lengthSq() ) {
+            if ( that.m_camera instanceof THREE.OrthographicCamera ) {
+                const scale_x = ( that.m_camera.right - that.m_camera.left ) / that.m_camera.zoom / that.m_domElement.clientWidth;
+                const scale_y = ( that.m_camera.top - that.m_camera.bottom ) / that.m_camera.zoom / that.m_domElement.clientWidth;
+
+                mouseChange.x *= scale_x;
+                mouseChange.y *= scale_y;
+            }
+
+            mouseChange.multiplyScalar( that.m_eye.length() * that.m_pan_speed );
+
+            pan.copy( that.m_eye ).cross( that.m_camera.up ).setLength( mouseChange.x );
+            pan.add( objectUp.copy( that.m_camera.up ).setLength( mouseChange.y ) );
+
+            that.m_camera.position.add( pan );
+            that.m_target.add( pan );
+
+            if ( that.m_static_moving ) {
+                that.m_pan_start.copy( that.m_pan_end );
+            } else {
+                const tmp: THREE.Vector2 = mouseChange.subVectors( that.m_pan_end, that.m_pan_start ).multiplyScalar( that.m_dynamic_damping_factor );
+                that.m_pan_start.add( tmp );
+            }
+        }
+    }
+
+    checkDistances(): void {
+        const that = this;
+		if ( ! that.m_no_zoom || ! that.m_no_pan ) {
+            const eye_length_sq: number = that.m_eye.lengthSq();
+			if ( eye_length_sq > that.m_max_distance * that.m_max_distance ) {
+				that.m_camera.position.addVectors( that.m_target, that.m_eye.setLength( that.m_max_distance ) );
+				that.m_zoom_start.copy( that.m_zoom_end );
+			}
+
+			if ( that.m_eye.lengthSq() < that.m_min_distance * that.m_min_distance ) {
+				that.m_camera.position.addVectors( that.m_target, that.m_eye.setLength( that.m_min_distance ) );
+				that.m_zoom_start.copy( that.m_zoom_end );
+			}
+		}
+    }
+    
+    update(): void {
+        const that = this;
+
+		that.m_eye.subVectors( that.m_camera.position, that.m_target );
+
+		if ( !that.m_no_rotate ) {
+			that.rotateCamera();
+		}
+
+		if ( !that.m_no_zoom ) {
+			that.zoomCamera();
+		}
+
+		if ( !that.m_no_pan ) {
+			that.panCamera();
+		}
+
+		that.m_camera.position.addVectors( that.m_target, that.m_eye );
+
+		if (that.m_camera instanceof THREE.PerspectiveCamera) {
+
+			that.checkDistances();
+
+			that.m_camera.lookAt( that.m_target );
+
+			if ( that.m_last_position.distanceToSquared( that.m_camera.position ) > that.m_EPS ) {
+				that.dispatchEvent( changeEvent );
+
+				that.m_last_position.copy( that.m_camera.position );
+			}
+
+		} else if ( that.m_camera instanceof THREE.OrthographicCamera ) {
+
+			that.m_camera.lookAt( that.m_target );
+
+            if ( that.m_last_position.distanceToSquared( that.m_camera.position ) > that.m_EPS 
+                || that.m_last_zoom !== that.m_camera.zoom 
+            ) {
+				that.dispatchEvent( changeEvent );
+
+				that.m_last_position.copy( that.m_camera.position );
+				that.m_last_zoom = that.m_camera.zoom;
+			}
+
+		} else {
+			console.warn( 'THREE.TrackballControls: Unsupported camera type' );
+        }
+    }
+    
+    reset(): void {
+        const that = this;
+		that.m_state = EState.NONE;
+		that.m_key_state = EState.NONE;
+
+		that.m_target.copy( that.m_target0 );
+		that.m_camera.position.copy( that.m_position0 );
+		that.m_camera.up.copy( that.m_up0 );
+		that.m_camera.zoom = that.m_zoom0;
+
+		that.m_camera.updateProjectionMatrix();
+
+		that.m_eye.subVectors( that.m_camera.position, that.m_target );
+
+		that.m_camera.lookAt( that.m_target );
+
+		that.dispatchEvent( changeEvent );
+
+		that.m_last_position.copy( that.m_camera.position );
+		that.m_last_zoom = that.m_camera.zoom;
+    }
+    
+    keydown(event: KeyboardEvent): void {
+        const that = this;
+		if ( that.m_enabled === false ) {
+            return;
+        }
+
+		window.removeEventListener( 'keydown', (ev: KeyboardEvent) => {
+            that.keydown(ev);
+        } );
+
+		if ( that.m_key_state !== EState.NONE ) {
+			return;
+		} else if ( event.keyCode === that.m_keys[ EState.ROTATE ] && ! that.m_no_rotate ) {
+			that.m_key_state = EState.ROTATE;
+		} else if ( event.keyCode === that.m_keys[ EState.ZOOM ] && ! that.m_no_zoom ) {
+			that.m_key_state = EState.ZOOM;
+		} else if ( event.keyCode === that.m_keys[ EState.PAN ] && ! that.m_no_pan ) {
+			that.m_key_state = EState.PAN;
 		}
 	}
 }
