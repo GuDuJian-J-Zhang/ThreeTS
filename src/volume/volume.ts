@@ -14,6 +14,7 @@ export interface IData4Extracted {
 	matrix: THREE.Matrix4;
 	planeWidth: number;
 	planeHeight: number;
+	ijkIndex: number;
 }
 
 export class Volume {
@@ -198,7 +199,8 @@ export class Volume {
                                     that.m_x_length, 
                                     that.m_y_length, 
                                     that.m_z_length
-                           );
+						   );
+		let IJKIndex: THREE.Vector3;
 		switch (axis) {
 			case EVolumeAxis.X :
 				axisInIJK.set( 1, 0, 0 );
@@ -206,6 +208,7 @@ export class Volume {
 				secondDirection.set( 0, - 1, 0 );
 				firstSpacing = that.m_spacing[ 2 ];
 				secondSpacing = that.m_spacing[ 1 ];
+				IJKIndex = new THREE.Vector3( RASIndex, 0, 0 );
 
 				planeMatrix.multiply( ( new THREE.Matrix4() ).makeRotationY( Math.PI / 2 ) );
 				positionOffset = ( that.m_ras_dimensions[ 0 ] - 1 ) / 2;
@@ -217,6 +220,7 @@ export class Volume {
 				secondDirection.set( 0, 0, 1 );
 				firstSpacing = that.m_spacing[ 0 ];
 				secondSpacing = that.m_spacing[ 2 ];
+				IJKIndex = new THREE.Vector3( 0, RASIndex, 0 );
 
 				planeMatrix.multiply( ( new THREE.Matrix4() ).makeRotationX( - Math.PI / 2 ) );
 				positionOffset = ( that.m_ras_dimensions[ 1 ] - 1 ) / 2;
@@ -229,7 +233,8 @@ export class Volume {
 				secondDirection.set( 0, - 1, 0 );
 				firstSpacing = that.m_spacing[ 0 ];
                 secondSpacing = that.m_spacing[ 1 ];
-                
+				IJKIndex = new THREE.Vector3( 0, 0, RASIndex );
+				
 				positionOffset = ( that.m_ras_dimensions[ 2 ] - 1 ) / 2;
 				planeMatrix.setPosition( new THREE.Vector3( 0, 0, RASIndex - positionOffset ) );
 				break;
@@ -244,13 +249,15 @@ export class Volume {
 		const jLength: number = Math.floor( Math.abs( secondDirection.dot( dimensions ) ) );
 		const planeWidth: number = Math.abs( iLength * firstSpacing );
 		const planeHeight: number = Math.abs( jLength * secondSpacing );
+		const ijkIndex: number = Math.abs( Math.round( IJKIndex.applyMatrix4( that.m_inverse_matrix_of_ijk2ras ).dot( axisInIJK ) ) );
 
 		return {
 			iLength: iLength,
 			jLength: jLength,
 			matrix: planeMatrix,
 			planeWidth: planeWidth,
-			planeHeight: planeHeight
+			planeHeight: planeHeight,
+			ijkIndex: ijkIndex
 		};
 	}
 

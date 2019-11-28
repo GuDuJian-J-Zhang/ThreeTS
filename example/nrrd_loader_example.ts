@@ -28,6 +28,7 @@ class NrrdLoaderExample {
         that.loadData();
         
         that.m_renderer = new THREE.WebGLRenderer( { alpha: true } );
+        that.m_renderer.setClearColor("#a7a7a2");
 		that.m_renderer.setPixelRatio( window.devicePixelRatio );
 		that.m_renderer.setSize( window.innerWidth, window.innerHeight );
         
@@ -86,18 +87,51 @@ class NrrdLoaderExample {
             that.m_scene.add(cube);
             
             const ras_dimension: number[] = volume.rasDimensions();
-            //z plane
-		    const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, Math.floor( ras_dimension[ 2 ] / 4 ) );
-            const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
-            that.m_scene.add(slice_z_mesh);
-		    //y plane
-		    const sliceY: VolumeSlice = volume.extractSlice(EVolumeAxis.Y, Math.floor( ras_dimension[ 1 ] / 2 ) );
-            const slice_y_mesh: THREE.Mesh = sliceY.mesh();
-            that.m_scene.add(slice_y_mesh);
-		    //x plane
-		    const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, Math.floor( ras_dimension[ 0 ] / 2 ) );
-            const slice_x_mesh: THREE.Mesh = sliceX.mesh();
-            that.m_scene.add(slice_x_mesh);
+            {
+                //z plane
+		        const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, 168 );
+                const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
+                that.m_scene.add(slice_z_mesh);
+                if (1) {
+                    for (let i = 0; i < ras_dimension[ 2 ]; ++i) {
+                        const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, i );
+                        const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
+                        that.m_scene.add(slice_z_mesh);
+                    }
+                }
+		        //y plane
+		        const sliceY: VolumeSlice = volume.extractSlice(EVolumeAxis.Y, Math.floor( ras_dimension[ 1 ] / 2 ) );
+                const slice_y_mesh: THREE.Mesh = sliceY.mesh();
+                that.m_scene.add(slice_y_mesh);
+		        //x plane
+		        const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, Math.floor( ras_dimension[ 0 ] / 2 ) );
+                const slice_x_mesh: THREE.Mesh = sliceX.mesh();
+                that.m_scene.add(slice_x_mesh);
+            }
+            if (0)
+            {
+                //z plane
+                for (let i = 0; i < ras_dimension[ 2 ]; ++i) {
+                    const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, i );
+                    const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
+                    that.m_scene.add(slice_z_mesh);
+                }
+		        
+                //y plane
+                for (let i = 0; i < ras_dimension[ 1 ]; ++i) {
+                    const sliceY: VolumeSlice = volume.extractSlice(EVolumeAxis.Y, i);
+                    const slice_y_mesh: THREE.Mesh = sliceY.mesh();
+                    that.m_scene.add(slice_y_mesh);
+                }
+		        
+                //x plane
+                for (let i = 0; i < ras_dimension[ 0 ]; ++i) {
+                    const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, i );
+                    const slice_x_mesh: THREE.Mesh = sliceX.mesh();
+                    that.m_scene.add(slice_x_mesh);
+                }
+            }
+		    
 	    } );
     }
 

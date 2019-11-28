@@ -10,7 +10,7 @@ export class VolumeSlice {
      * will automatically call updateGeometry 
      * at the next repaint
 	 */
-    private m_index: number = -1;
+    private m_ras_index: number = -1;
     private m_axis: EVolumeAxis = EVolumeAxis.Z;
     /**
     * @member {Boolean} m_geometry_needs_update 
@@ -41,7 +41,7 @@ export class VolumeSlice {
     constructor(volume: Volume, index: number, axis: EVolumeAxis) {
         const that = this;
         that.m_volume = volume;
-        that.m_index = index;
+        that.m_ras_index = index;
         that.m_axis = axis;
         that.m_geometry_needs_update = false;
         that.m_canvas = document.createElement( "canvas" );
@@ -52,15 +52,15 @@ export class VolumeSlice {
 
     get index(): number {
         const that = this;
-        return that.m_index;
+        return that.m_ras_index;
     }
 
     set index(value: number) {
         const that = this;
-        if (that.m_index === value) {
+        if (that.m_ras_index === value) {
             return;
         }
-        that.m_index = value;
+        that.m_ras_index = value;
 		that.m_geometry_needs_update = true;
     }
 
@@ -153,6 +153,7 @@ export class VolumeSlice {
 				}
 			}
         }
+        if(0)
         { // for test
             let canvas = document.createElement('canvas');
             let context = canvas.getContext('2d');
@@ -180,7 +181,7 @@ export class VolumeSlice {
     */
     private updateGeometry() {
         const that = this;
-        that.m_extracted = that.m_volume.extractPerpendicularPlane( that.m_axis, that.m_index );
+        that.m_extracted = that.m_volume.extractPerpendicularPlane( that.m_axis, that.m_ras_index );
  
         that.m_canvas.width = that.m_extracted.planeWidth;
         that.m_canvas.height = that.m_extracted.planeHeight;
@@ -214,17 +215,17 @@ export class VolumeSlice {
         let index_z: number = 0;
         const volume_xyz: THREE.Vector3 = that.m_volume.xyzLength();
         if (that.m_axis === EVolumeAxis.X) {
-            index_x = volume_xyz.x - 1 - that.m_index;
+            index_x = volume_xyz.x - 1 - that.m_extracted.ijkIndex;
             index_y = volume_xyz.y - 1 - j;
             index_z = i;
         } else if (that.m_axis === EVolumeAxis.Y) {
             index_x = volume_xyz.x - i - 1;
-            index_y = that.m_index;
+            index_y = that.m_extracted.ijkIndex;
             index_z = volume_xyz.z - j - 1;
         } else if (that.m_axis === EVolumeAxis.Z) {
             index_x = volume_xyz.x - 1 - i;
             index_y = volume_xyz.y - 1 - j;
-            index_z = volume_xyz.z - 1 - that.m_index;
+            index_z = volume_xyz.z - 1 - that.m_extracted.ijkIndex;
         }
         return that.m_volume.access(index_x, index_y, index_z);
     }
