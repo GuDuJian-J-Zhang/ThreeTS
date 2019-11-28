@@ -58,7 +58,9 @@ class NrrdLoaderExample {
 		let that = this;
 		requestAnimationFrame( () => {
 			this.animate();
-		} );
+        } );
+        
+        that.m_controls.update();
 
 		that.m_renderer.render(that.m_scene, that.m_camera);
     };
@@ -85,17 +87,17 @@ class NrrdLoaderExample {
             
             const ras_dimension: number[] = volume.rasDimensions();
             //z plane
-		    // const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, Math.floor( ras_dimension[ 2 ] / 4 ) );
-            // const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
-            // that.m_scene.add(slice_z_mesh);
+		    const sliceZ: VolumeSlice = volume.extractSlice(EVolumeAxis.Z, Math.floor( ras_dimension[ 2 ] / 4 ) );
+            const slice_z_mesh: THREE.Mesh = sliceZ.mesh();
+            that.m_scene.add(slice_z_mesh);
 		    //y plane
 		    const sliceY: VolumeSlice = volume.extractSlice(EVolumeAxis.Y, Math.floor( ras_dimension[ 1 ] / 2 ) );
             const slice_y_mesh: THREE.Mesh = sliceY.mesh();
             that.m_scene.add(slice_y_mesh);
 		    //x plane
-		    // const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, Math.floor( ras_dimension[ 0 ] / 2 ) );
-            // const slice_x_mesh: THREE.Mesh = sliceX.mesh();
-            // that.m_scene.add(slice_x_mesh);
+		    const sliceX: VolumeSlice = volume.extractSlice(EVolumeAxis.X, Math.floor( ras_dimension[ 0 ] / 2 ) );
+            const slice_x_mesh: THREE.Mesh = sliceX.mesh();
+            that.m_scene.add(slice_x_mesh);
 	    } );
     }
 
