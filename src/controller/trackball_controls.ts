@@ -152,6 +152,14 @@ export class TrackballControls extends THREE.EventDispatcher {
 	    that.m_domElement.addEventListener( 'mousedown', (ev: MouseEvent) => {
             that.mousedown(ev);
         }, false );
+        
+        document.addEventListener( 'mousemove', (ev: MouseEvent) => {
+            that.mousemove(ev);
+        }, false );
+		document.addEventListener( 'mouseup', (ev: MouseEvent) => {
+            that.mouseup(ev);
+        }, false );
+
 	    that.m_domElement.addEventListener( 'wheel', (ev: WheelEvent) => {
             that.mousewheel(ev);
         }, false );
@@ -376,8 +384,7 @@ export class TrackballControls extends THREE.EventDispatcher {
     checkDistances(): void {
         const that = this;
 		if ( ! that.m_no_zoom || ! that.m_no_pan ) {
-            const eye_length_sq: number = that.m_eye.lengthSq();
-			if ( eye_length_sq > that.m_max_distance * that.m_max_distance ) {
+			if ( that.m_eye.lengthSq() > that.m_max_distance * that.m_max_distance ) {
 				that.m_camera.position.addVectors( that.m_target, that.m_eye.setLength( that.m_max_distance ) );
 				that.m_zoom_start.copy( that.m_zoom_end );
 			}
@@ -489,7 +496,7 @@ export class TrackballControls extends THREE.EventDispatcher {
 
 		that.m_key_state = EState.NONE;
 
-		window.addEventListener( 'keydown', (event) => {
+		window.addEventListener( 'keydown', (event: KeyboardEvent) => {
             that.keydown(event);
         }, false );
     }
@@ -548,12 +555,12 @@ export class TrackballControls extends THREE.EventDispatcher {
 
 		}
 
-		document.addEventListener( 'mousemove', (ev: MouseEvent) => {
-            that.mousemove(ev);
-        }, false );
-		document.addEventListener( 'mouseup', (ev: MouseEvent) => {
-            that.mouseup(ev);
-        }, false );
+		// document.addEventListener( 'mousemove', (ev: MouseEvent) => {
+        //     that.mousemove(ev);
+        // }, false );
+		// document.addEventListener( 'mouseup', (ev: MouseEvent) => {
+        //     that.mouseup(ev);
+        // }, false );
 
 		that.dispatchEvent( startEvent );
     }
@@ -602,12 +609,12 @@ export class TrackballControls extends THREE.EventDispatcher {
 
 		that.m_state = EState.NONE;
 
-		document.removeEventListener( 'mousemove', (ev: MouseEvent) => {
-            that.mousemove(ev);
-        } );
-		document.removeEventListener( 'mouseup', (ev: MouseEvent) => {
-            that.mouseup(ev);
-        } );
+		// document.removeEventListener( 'mousemove', (ev: MouseEvent) => {
+        //     that.mousemove(ev);
+        // } );
+		// document.removeEventListener( 'mouseup', (ev: MouseEvent) => {
+        //     that.mouseup(ev);
+        // } );
 		that.dispatchEvent( endEvent );
     }
     
