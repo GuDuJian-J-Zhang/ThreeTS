@@ -1,6 +1,7 @@
 {
     "files": [
         "first_person_controls.ts",
+        "trackball_controls.ts"
     ],
     "compilerOptions": {
         "module": "commonjs",

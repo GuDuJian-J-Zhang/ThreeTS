@@ -136,7 +136,7 @@ export class NrrdLoader extends Loader {
         that.parseHeader(header);
 
         // the data without header
-        let the_data;
+        let the_data: ArrayBufferView;
 		let the_array_data = bytes.subarray(data_start);
         if (that.m_header_obj.encoding === 'gzip' 
             || that.m_header_obj.encoding === 'gz'
