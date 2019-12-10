@@ -143,7 +143,7 @@ export class NrrdLoader extends Loader {
         ) {
 			// we need to decompress the datastream
 			// here we start the unzipping and get a typed Uint8Array back
-			the_array_data = Pako.inflate( new Uint8Array( the_array_data ) ); // eslint-disable-line no-undef
+			the_data = Pako.inflate( new Uint8Array( the_array_data ) ); // eslint-disable-line no-undef
 
         } else if (that.m_header_obj.encoding === "ascii" 
                    || that.m_header_obj.encoding === "text" 
@@ -162,7 +162,7 @@ export class NrrdLoader extends Loader {
 
 		}
         // .. let's use the underlying array buffer
-        let the_buffer_data = the_array_data.buffer;
+        let the_buffer_data = the_data.buffer;
 
         const data4volume = new that.m_data_array_type(the_buffer_data);
 		const volume = new Volume(that.m_header_obj, data4volume);
