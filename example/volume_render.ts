@@ -10,7 +10,7 @@ class NrrdLoaderExample {
 	private m_camera: THREE.PerspectiveCamera;
     private m_renderer: THREE.WebGLRenderer;
     private m_controls: TrackballControls;
-	constructor() {
+	constructor(nrrd_file_name: string = "test.nrrd") {
 		let that = this;
 		// that.m_renderer.setSize( window.innerWidth, window.innerHeight );
 		// document.body.appendChild( that.m_renderer.domElement );
@@ -25,7 +25,7 @@ class NrrdLoaderExample {
 		dirLight.position.set( 200, 200, 1000 ).normalize();
 		that.m_camera.add( dirLight );
         that.m_camera.add( dirLight.target );
-        that.loadData();
+        that.loadData(nrrd_file_name);
         
         // Create renderer
 		const canvas = document.createElement( 'canvas' );
@@ -71,10 +71,10 @@ class NrrdLoaderExample {
 		that.m_renderer.render(that.m_scene, that.m_camera);
     };
     
-    private loadData(): void {
+    private loadData(nrrd_file_name: string): void {
         const that = this;
         var loader = new NrrdLoader();
-		loader.load( "http://localhost:8000/nrrd/stent.nrrd", (volume: Volume): void => {
+		loader.load( `http://localhost:8000/nrrd/${nrrd_file_name}`, (volume: Volume): void => {
             // Texture to hold the volume. We have scalars, so we put our data in the red channel.
 			// THREEJS will select R32F (33326) based on the THREE.RedFormat and THREE.FloatType.
 			// Also see https://www.khronos.org/registry/webgl/specs/latest/2.0/#TEXTURE_TYPES_FORMATS_FROM_DOM_ELEMENTS_TABLE
@@ -151,6 +151,17 @@ class NrrdLoaderExample {
 }
 
 window.onload = function () {
-    let nrrd_loader_example = new NrrdLoaderExample();
-    nrrd_loader_example.animate();
+    const res = window.location.href.split("?");
+    if (res && res.length > 1) {
+        const param = res[1].split("=");
+        if (param && param.length > 1) {
+            const nrrd_file_name: string = param[1];
+            let nrrd_loader_example = new NrrdLoaderExample(nrrd_file_name);
+            nrrd_loader_example.animate();
+        }
+    } else {
+        let nrrd_loader_example = new NrrdLoaderExample();
+        nrrd_loader_example.animate();
+    }
+    
 }
