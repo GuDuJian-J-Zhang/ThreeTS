@@ -27,7 +27,12 @@ class NrrdLoaderExample {
         that.m_camera.add( dirLight.target );
         that.loadData();
         
-        that.m_renderer = new THREE.WebGLRenderer( { alpha: true } );
+        // Create renderer
+		const canvas = document.createElement( 'canvas' );
+		const context = canvas.getContext( 'webgl2', { alpha: false, antialias: false } );
+        that.m_renderer = new THREE.WebGLRenderer( { canvas: canvas, context: context } );
+            
+        // that.m_renderer = new THREE.WebGLRenderer( { alpha: true } );
         that.m_renderer.setClearColor("#a7a7a2");
 		that.m_renderer.setPixelRatio( window.devicePixelRatio );
 		that.m_renderer.setSize( window.innerWidth, window.innerHeight );
@@ -69,7 +74,7 @@ class NrrdLoaderExample {
     private loadData(): void {
         const that = this;
         var loader = new NrrdLoader();
-		loader.load( "http://localhost:8000/nrrd/test.nrrd", (volume: Volume): void => {
+		loader.load( "http://localhost:8000/nrrd/stent.nrrd", (volume: Volume): void => {
             // Texture to hold the volume. We have scalars, so we put our data in the red channel.
 			// THREEJS will select R32F (33326) based on the THREE.RedFormat and THREE.FloatType.
 			// Also see https://www.khronos.org/registry/webgl/specs/latest/2.0/#TEXTURE_TYPES_FORMATS_FROM_DOM_ELEMENTS_TABLE
@@ -87,10 +92,14 @@ class NrrdLoaderExample {
 			texture_3d.unpackAlignment = 1;
 
 			// Colormap textures
-			// cmtextures = {
-			// 	viridis: new THREE.TextureLoader().load( 'textures/cm_viridis.png', render ),
-			// 	gray: new THREE.TextureLoader().load( 'textures/cm_gray.png', render )
-			// };
+			const cmtextures = {
+				viridis: new THREE.TextureLoader().load( 'http://localhost:8000/textures/cm_viridis.png', () => {
+                    that.animate();
+                } ),
+				gray: new THREE.TextureLoader().load( 'http://localhost:8000/textures/cm_gray.png', () => {
+                    that.animate();
+                } )
+			};
 
 			// Material
 			var shader = VolumeRenderShader1;
@@ -106,7 +115,7 @@ class NrrdLoaderExample {
 			uniforms[ "u_clim" ].value.set( 0, 1);
 			uniforms[ "u_renderstyle" ].value = 0; // 0: MIP, 1: ISO
 			uniforms[ "u_renderthreshold" ].value = 0.15; // For ISO renderstyle
-			// uniforms[ "u_cmdata" ].value = cmtextures[ volconfig.colormap ];
+			uniforms[ "u_cmdata" ].value = cmtextures.viridis;
 
 			const material = new THREE.ShaderMaterial( {
 				uniforms: uniforms,
