@@ -7,3 +7,4 @@
 4. npx webpack --config ./example/webpack.config.js
 
 # Visit
+file:///Users/zebrafish/gudujian/ThreeTS/build/example/nrrd_loader_example.html?fileName=test.nrrd

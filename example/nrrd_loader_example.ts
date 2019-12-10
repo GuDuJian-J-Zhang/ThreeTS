@@ -10,7 +10,7 @@ class NrrdLoaderExample {
 	private m_camera: THREE.PerspectiveCamera;
     private m_renderer: THREE.WebGLRenderer;
     private m_controls: TrackballControls;
-	constructor() {
+	constructor(nrrd_file_name: string = "test.nrrd") {
 		let that = this;
 		// that.m_renderer.setSize( window.innerWidth, window.innerHeight );
 		// document.body.appendChild( that.m_renderer.domElement );
@@ -25,7 +25,7 @@ class NrrdLoaderExample {
 		dirLight.position.set( 200, 200, 1000 ).normalize();
 		that.m_camera.add( dirLight );
         that.m_camera.add( dirLight.target );
-        that.loadData();
+        that.loadData(nrrd_file_name);
         
         that.m_renderer = new THREE.WebGLRenderer( { alpha: true } );
         that.m_renderer.setClearColor("#a7a7a2");
@@ -66,10 +66,10 @@ class NrrdLoaderExample {
 		that.m_renderer.render(that.m_scene, that.m_camera);
     };
     
-    private loadData(): void {
+    private loadData(nrrd_file_name: string): void {
         const that = this;
         var loader = new NrrdLoader();
-		loader.load( "http://localhost:8000/nrrd/test.nrrd", (volume: Volume): void => {
+		loader.load( `http://localhost:8000/nrrd/${nrrd_file_name}`, (volume: Volume): void => {
             const volume_xyz: THREE.Vector3 = volume.xyzLength();
 		    //box helper to see the extend of the volume
 		    const geometry = new THREE.BoxBufferGeometry( 
@@ -145,6 +145,16 @@ class NrrdLoaderExample {
 }
 
 window.onload = function () {
-    let nrrd_loader_example = new NrrdLoaderExample();
-    nrrd_loader_example.animate();
+    const res = window.location.href.split("?");
+    if (res && res.length > 1) {
+        const param = res[1].split("=");
+        if (param && param.length > 1) {
+            const nrrd_file_name: string = param[1];
+            let nrrd_loader_example = new NrrdLoaderExample(nrrd_file_name);
+            nrrd_loader_example.animate();
+        }
+    } else {
+        let nrrd_loader_example = new NrrdLoaderExample();
+        nrrd_loader_example.animate();
+    }
 }
