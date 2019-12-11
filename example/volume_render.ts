@@ -1,6 +1,6 @@
 
 import {Scene} from '../src/scene/scene';
-import {NrrdLoader} from '../src/loaders/nrrd_loader';
+import {NrrdLoader, ENrrdDataArrayType} from '../src/loaders/nrrd_loader';
 import {THREE} from '../src/3rd';
 import { Volume } from '../src/volume/volume';
 import { VolumeRenderShader1 } from '../src/shader/volume_render_shader1';
@@ -86,8 +86,22 @@ class NrrdLoaderExample {
                 volume_xyz.y, 
                 volume_xyz.z 
             );
-			texture_3d.format = THREE.RedFormat;
-			texture_3d.type = THREE.FloatType;
+            texture_3d.format = THREE.RedFormat;
+            const volume_data_type: ENrrdDataArrayType = volume.getDataType();
+            let texture_type: THREE.TextureDataType;
+            if (volume_data_type === ENrrdDataArrayType.UINT8) {
+                texture_type = THREE.UnsignedByteType;
+            } else if (volume_data_type === ENrrdDataArrayType.FLOAT) {
+                texture_type = THREE.FloatType;
+            } else if (volume_data_type === ENrrdDataArrayType.SHORT) {
+                texture_type = THREE.UnsignedShortType;
+            } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
+                texture_type = THREE.UnsignedIntType;
+            }
+
+            texture_type = THREE.UnsignedByteType;
+
+			texture_3d.type = texture_type;
 			texture_3d.minFilter = texture_3d.magFilter = THREE.LinearFilter;
 			texture_3d.unpackAlignment = 1;
 

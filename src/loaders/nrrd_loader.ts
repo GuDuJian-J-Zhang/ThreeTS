@@ -17,7 +17,7 @@ enum NrrdEncoding {
     BZIP2 = "bzip2" // not support
 }
 
-enum NrrdDataArrayType {
+export enum ENrrdDataArrayType {
     // Uint8Array
     UCHAR = "uchar",
 	UNSIGNED_CHAR = "unsigned char",
@@ -70,7 +70,7 @@ enum NrrdEndiannessType {
 
 export interface NrrdHeader {
     encoding: NrrdEncoding;
-    type: NrrdDataArrayType;
+    type: ENrrdDataArrayType;
     endian: NrrdEndiannessType;
     dimension: number;
     sizes: number[];
@@ -136,7 +136,7 @@ export class NrrdLoader extends Loader {
         that.parseHeader(header);
 
         // the data without header
-        let the_data: ArrayBufferView;
+        let the_data: Uint8Array;
 		let the_array_data = bytes.subarray(data_start);
         if (that.m_header_obj.encoding === 'gzip' 
             || that.m_header_obj.encoding === 'gz'
@@ -164,7 +164,9 @@ export class NrrdLoader extends Loader {
         // .. let's use the underlying array buffer
         let the_buffer_data = the_data.buffer;
 
-        const data4volume = new that.m_data_array_type(the_buffer_data);
+        let data4volume = the_data;// new Uint8Array(the_buffer_data);
+        // data4volume = new Float32Array(data4volume);
+
 		const volume = new Volume(that.m_header_obj, data4volume);
 		return volume;
 	}
@@ -184,6 +186,11 @@ export class NrrdLoader extends Loader {
 			output += String.fromCharCode(array[i]);
 		}
 		return output;
+    }
+
+    getDataType(): ENrrdDataArrayType {
+        const that = this;
+        return that.m_header_obj.type;
     }
     
     //parse the data when registred as one of this type : 'text', 'ascii', 'txt'
@@ -303,55 +310,55 @@ export class NrrdLoader extends Loader {
         const that = this;
         switch (data_type) {
 
-            case NrrdDataArrayType.UCHAR:
-            case NrrdDataArrayType.UNSIGNED_CHAR:
-            case NrrdDataArrayType.UINT8:
-            case NrrdDataArrayType.UINT8_T:
+            case ENrrdDataArrayType.UCHAR:
+            case ENrrdDataArrayType.UNSIGNED_CHAR:
+            case ENrrdDataArrayType.UINT8:
+            case ENrrdDataArrayType.UINT8_T:
                 that.m_data_array_type = Uint8Array;
                 break;
-            case NrrdDataArrayType.SIGNED_CHAR:
-            case NrrdDataArrayType.INT8:
-            case NrrdDataArrayType.INT8_T:
+            case ENrrdDataArrayType.SIGNED_CHAR:
+            case ENrrdDataArrayType.INT8:
+            case ENrrdDataArrayType.INT8_T:
                 that.m_data_array_type = Int8Array;
                 break;
-            case NrrdDataArrayType.SHORT:
-            case NrrdDataArrayType.SHORT_INT:
-            case NrrdDataArrayType.SIGNED_INT:
-            case NrrdDataArrayType.SIGNED_SHORT_INT:
-            case NrrdDataArrayType.INT16:
-            case NrrdDataArrayType.INT16_T:
+            case ENrrdDataArrayType.SHORT:
+            case ENrrdDataArrayType.SHORT_INT:
+            case ENrrdDataArrayType.SIGNED_INT:
+            case ENrrdDataArrayType.SIGNED_SHORT_INT:
+            case ENrrdDataArrayType.INT16:
+            case ENrrdDataArrayType.INT16_T:
                 that.m_data_array_type = Int16Array;
                 break;
-            case NrrdDataArrayType.USHORT:
-            case NrrdDataArrayType.UNSIGNED_SHORT:
-            case NrrdDataArrayType.UNSIGNED_SHORT_INT:
-            case NrrdDataArrayType.UINT16:
-            case NrrdDataArrayType.UINT16_T:
+            case ENrrdDataArrayType.USHORT:
+            case ENrrdDataArrayType.UNSIGNED_SHORT:
+            case ENrrdDataArrayType.UNSIGNED_SHORT_INT:
+            case ENrrdDataArrayType.UINT16:
+            case ENrrdDataArrayType.UINT16_T:
                 that.m_data_array_type = Uint16Array;
                 break;
-            case NrrdDataArrayType.INT:
-            case NrrdDataArrayType.SIGNED_INT:
-            case NrrdDataArrayType.INT32:
-            case NrrdDataArrayType.INT32_T:
+            case ENrrdDataArrayType.INT:
+            case ENrrdDataArrayType.SIGNED_INT:
+            case ENrrdDataArrayType.INT32:
+            case ENrrdDataArrayType.INT32_T:
                 that.m_data_array_type = Int32Array;
                 break;
-            case NrrdDataArrayType.UINT:
-            case NrrdDataArrayType.UNSIGNED_INT:
-            case NrrdDataArrayType.UINT32:
-            case NrrdDataArrayType.UINT32_T:
+            case ENrrdDataArrayType.UINT:
+            case ENrrdDataArrayType.UNSIGNED_INT:
+            case ENrrdDataArrayType.UINT32:
+            case ENrrdDataArrayType.UINT32_T:
                 that.m_data_array_type = Uint32Array;
                 break;
-            case NrrdDataArrayType.FLOAT:
+            case ENrrdDataArrayType.FLOAT:
                 that.m_data_array_type = Float32Array;
                 break;
-            case NrrdDataArrayType.DOUBLE:
+            case ENrrdDataArrayType.DOUBLE:
                 that.m_data_array_type = Float64Array;
                 break;
             default:
                 throw new Error( 'Unsupported NRRD data type: ' + data_type );
 
         }
-        that.m_header_obj.type = <NrrdDataArrayType>data_type;
+        that.m_header_obj.type = <ENrrdDataArrayType>data_type;
     }
 
     private setEndian(data: string): void {

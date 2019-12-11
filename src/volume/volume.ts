@@ -1,4 +1,4 @@
-import { NrrdHeader } from '../loaders/nrrd_loader';
+import { NrrdHeader, ENrrdDataArrayType } from '../loaders/nrrd_loader';
 import { VolumeSlice } from '../volume/volume_slice';
 import {THREE}  from '../3rd';
 
@@ -36,7 +36,7 @@ export class Volume {
     private m_nrrd_header: NrrdHeader;
     private m_data: THREE.TypedArray;
 
-    constructor(nrrd_header: NrrdHeader, data) {
+    constructor(nrrd_header: NrrdHeader, data: THREE.TypedArray) {
         this.m_nrrd_header = nrrd_header;
         this.m_data = data;
 
@@ -107,6 +107,11 @@ export class Volume {
         // only if the threshold was not already set
         this.m_lower_threshold = min;
         this.m_upper_threshold = max;
+	}
+	
+	getDataType(): ENrrdDataArrayType {
+        const that = this;
+        return that.m_nrrd_header.type;
     }
 
     /**
@@ -116,7 +121,7 @@ export class Volume {
 	 * @param {number} k    Third coordinate
 	 * @returns {number}  value in the data array
 	 */
-	getData(i: number, j: number, k: number ): any {
+	getData(i: number, j: number, k: number ): number {
         const that = this;
         const index: number = that.access(i, j, k);
 		return that.m_data[index];
