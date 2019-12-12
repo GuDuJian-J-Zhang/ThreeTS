@@ -164,9 +164,7 @@ export class NrrdLoader extends Loader {
         // .. let's use the underlying array buffer
         let the_buffer_data = the_data.buffer;
 
-        let data4volume = the_data;// new Uint8Array(the_buffer_data);
-        // data4volume = new Float32Array(data4volume);
-
+        let data4volume = new that.m_data_array_type(the_buffer_data);
 		const volume = new Volume(that.m_header_obj, data4volume);
 		return volume;
 	}
