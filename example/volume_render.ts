@@ -79,28 +79,38 @@ class NrrdLoaderExample {
 			// THREEJS will select R32F (33326) based on the THREE.RedFormat and THREE.FloatType.
 			// Also see https://www.khronos.org/registry/webgl/specs/latest/2.0/#TEXTURE_TYPES_FORMATS_FROM_DOM_ELEMENTS_TABLE
 			// TODO: look the dtype up in the volume metadata
+            const volume_data_type: ENrrdDataArrayType = volume.getDataType();
+            let texture_type: THREE.TextureDataType;
+            let float32data: THREE.TypedArray;
+            if (volume_data_type === ENrrdDataArrayType.UINT8) {
+                texture_type = THREE.UnsignedByteType;
+                float32data = volume.data;
+            } else if (volume_data_type === ENrrdDataArrayType.FLOAT) {
+                texture_type = THREE.FloatType;
+                float32data = volume.data;
+            } else if (volume_data_type === ENrrdDataArrayType.SHORT) {
+                texture_type = THREE.FloatType;
+                float32data = new Float32Array(volume.data.length);
+                for(let i = 0; i < volume.data.length; i++) {
+                    float32data[i] = volume.data[i] / (volume.data[i] >= 0 ? 32767 : 32768);
+                }
+            } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
+                texture_type = THREE.FloatType;
+                float32data = new Float32Array(volume.data.length);
+                for(let i = 0; i < volume.data.length; i++) {
+                    const idata = volume.data[i];
+                    float32data[i] = (idata >= 0x8000) ? -(0x10000 - idata) / 0x8000 : idata / 0x7FFF;
+                }
+            }
+
             const volume_xyz: THREE.Vector3 = volume.xyzLength();
             let texture_3d = new THREE.DataTexture3D( 
-                volume.data, 
+                float32data, 
                 volume_xyz.x, 
                 volume_xyz.y, 
                 volume_xyz.z 
             );
             texture_3d.format = THREE.RedFormat;
-            const volume_data_type: ENrrdDataArrayType = volume.getDataType();
-            let texture_type: THREE.TextureDataType;
-            if (volume_data_type === ENrrdDataArrayType.UINT8) {
-                texture_type = THREE.UnsignedByteType;
-            } else if (volume_data_type === ENrrdDataArrayType.FLOAT) {
-                texture_type = THREE.FloatType;
-            } else if (volume_data_type === ENrrdDataArrayType.SHORT) {
-                texture_type = THREE.UnsignedShortType;
-            } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
-                texture_type = THREE.UnsignedIntType;
-            }
-
-            texture_type = THREE.UnsignedByteType;
-
 			texture_3d.type = texture_type;
 			texture_3d.minFilter = texture_3d.magFilter = THREE.LinearFilter;
 			texture_3d.unpackAlignment = 1;
@@ -127,7 +137,7 @@ class NrrdLoaderExample {
                 volume_xyz.z 
             );
 			uniforms[ "u_clim" ].value.set( 0, 1);
-			uniforms[ "u_renderstyle" ].value = 0; // 0: MIP, 1: ISO
+			uniforms[ "u_renderstyle" ].value = 1; // 0: MIP, 1: ISO
 			uniforms[ "u_renderthreshold" ].value = 0.15; // For ISO renderstyle
 			uniforms[ "u_cmdata" ].value = cmtextures.viridis;
 
