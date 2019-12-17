@@ -1,0 +1,14 @@
+{
+    "files": [
+        "listener.ts",
+        "server.ts",
+        "start.ts"
+    ],
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es5",
+      "noImplicitAny": true,
+      "sourceMap": true,
+      "declaration": false
+    }
+}
