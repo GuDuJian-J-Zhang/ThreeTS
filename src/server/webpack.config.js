@@ -13,12 +13,13 @@ module.exports = [
           ],
         },
         resolve: {
-          extensions: [ '.ts'],
+          extensions: [ '.ts', '.js'],
         },
         mode: "development",
         output: {
           filename: 'server.js',
           path: path.resolve(__dirname, '../../build/debug'),
         },
+        target: "node"
     }
 ];

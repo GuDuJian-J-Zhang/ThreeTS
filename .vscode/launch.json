@@ -21,6 +21,15 @@
             "args": [
                 "--config", "./example/webpack.config.js"
              ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "start server",
+            "program": "${workspaceFolder}/build/debug/server.js",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
         }
     ]
 }
