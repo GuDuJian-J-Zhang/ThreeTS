@@ -31,7 +31,7 @@ export class Server {
         that.m_express.get("/nii/:filename", function (req, res) {
             const nii_file_name: string = req.params.filename;
             console.log(nii_file_name);
-            res.sendFile(`/Users/zebrafish/work/data/${nii_file_name}`);
+            res.sendFile(`/Users/zebrafish/work/data/nii/${nii_file_name}`);
         });
 
         that.m_express.get("/image/:filename", function (req, res) {
