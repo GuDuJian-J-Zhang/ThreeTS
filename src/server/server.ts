@@ -43,13 +43,13 @@ export class Server {
         that.m_express.get("/nrrd/:filename", function (req, res) {
             const nrrd_file_name: string = req.params.filename;
             console.log(nrrd_file_name);
-            res.sendFile(`/Users/zhangjun/work/gudujian/ThreeTS/data/nrrd/${nrrd_file_name}`);
+            res.sendFile(`/Users/zebrafish/work/data/nrrd/${nrrd_file_name}`);
         });
 
         that.m_express.get("/textures/:filename", function (req, res) {
             const texture_file_name: string = req.params.filename;
             console.log(texture_file_name);
-            res.sendFile(`/Users/zhangjun/work/gudujian/ThreeTS/data/textures/${texture_file_name}`);
+            res.sendFile(`/Users/zebrafish/gudujian/ThreeTS/data/textures/${texture_file_name}`);
         });
 
         that.m_listener = new Listener(that.m_express);

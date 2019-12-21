@@ -1,0 +1,275 @@
+{
+    "layers": [
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_anterior reticular formation.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.7409811728685447, 0.0746512149846088, 0.3023924711679207, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_caudal hypothalamus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.9712528856666285, 0.17171746268555022, 0.5009315271710291, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_cerebellum.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.7367982371537756, 0.04562089441449424, 0.28993893680049987, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_glossopharyngeal ganglion.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.6782857250368437, 0.893131079399915, 0.0071948508832897495, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_habenula.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.9593446420358496, 0.5566546215211261, 0.5386642158835466, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_inferior olive.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.09063089886919262, 0.49075019905060935, 0.01964192154222455, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_intermediate hypothalamus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.9840101574041549, 0.02661894927035857, 0.009967441639856744, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_intermediate reticular formation.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.2922497619264419, 0.737189718523646, 0.5809850562426282, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_interpeducular nucleus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.20824531294416326, 0.729804252339719, 0.43587981536606546, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_medial ovtavolateral nucleus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.2628622440872197, 0.8373914967604759, 0.7659963132122469, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_mo stripe 1.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.6879854446042457, 0.0807861622200603, 0.6806279754524653, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_mo stripe 2.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.7152123621753912, 0.4568489123596018, 0.7254855636530111, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_mo stripe 3.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.7949174006639146, 0.34649219786775753, 0.9003988972709733, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_mo stripe 4.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.14841529502343453, 0.8160547833004872, 0.9075237784674088, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_mo stripe 5.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.7016902346297316, 0.0843765819081157, 0.18916092028902942, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_octaval ganglion.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.22669861053777862, 0.22068073338795346, 0.8298357827274179, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_olfactory bulb.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.2705248196678294, 0.11474642778418032, 0.7041090558926659, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_olfactory epithelium.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.8927767489093881, 0.071669623436176, 0.864465408264943, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_pallium.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.4073103504207991, 0.09283274869817593, 0.4487817012911348, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_pituitary.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.871694860592209, 0.00659819883006052, 0.2996897515140715, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_posterior reticular formation.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.8043246897527594, 0.5250387181848062, 0.46185696994922454, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_posterior tuberculum.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.3628152344655482, 0.4048404101578882, 0.9350115093961175, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_preoptic region.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.46628465611687786, 0.37366834026435214, 0.007170814659566371, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_pretectum.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.8588015758188527, 0.10348370467465351, 0.39233088563790197, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_raphe nucleus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.5852071357817279, 0.27642417963832133, 0.5814838313806783, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_retina.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.5124182489546198, 0.34167034647087324, 0.9315344278058657, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_rostral hypothalamus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.47181929563386227, 0.7495018010077474, 0.9026055778115141, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_subpallium.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.4808574156949097, 0.06922143976197215, 0.3557538739932802, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_tectum.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.4994396892441604, 0.6509622880855623, 0.08633338650851541, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_tegmentum.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.5539132504388515, 0.987079691980693, 0.7337799921675825, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_thalamus.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.8666462774195609, 0.07669196244144105, 0.9265383650951127, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_torus longitudinalis.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.872487534872489, 0.7726310746263536, 0.12205758547608014, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_torus semicircularis.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.05573132946093695, 0.2922551520853103, 0.8877681079531872, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_trigeminal ganglion.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.13732859033141231, 0.24360621412554617, 0.16740452334739442, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_vagal region.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.8377423171361873, 0.4457304772433577, 0.345152168527211, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        },
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_vagus motor neurons.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.09325804466704657, 0.9404636234272294, 0.2733926118926242, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        }
+    ],
+    "navigation": {
+        "pose": {
+            "position": {
+                "voxelSize": [
+                    4,
+                    4,
+                    4
+                ],
+                "voxelCoordinates": [
+                    50.535362243652344,
+                    132.52601623535156,
+                    49.975284576416016
+                ]
+            }
+        },
+        "zoomFactor": 120.991144617663
+    },
+    "perspectiveZoom": 4.338617996942407,
+    "layout": "3d"
+}
