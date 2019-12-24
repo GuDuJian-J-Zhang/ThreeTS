@@ -16,10 +16,12 @@ export declare class LineBasicMaterial extends THREE.Material {
     private m_linecap;
     private m_linejoin;
     constructor(parameters: LineBasicMaterialParameters);
-    color: THREE.Color;
-    linewidth: number;
-    readonly linecap: string;
-    readonly linejoin: string;
+    get color(): THREE.Color;
+    set color(val: THREE.Color);
+    get linewidth(): number;
+    set linewidth(val: number);
+    get linecap(): string;
+    get linejoin(): string;
     setValues(parameters: LineBasicMaterialParameters): void;
     copy(source: this): this;
 }

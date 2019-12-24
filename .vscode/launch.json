@@ -27,6 +27,9 @@
             "request": "launch",
             "name": "start server",
             "program": "${workspaceFolder}/build/debug/server.js",
+            "env": {
+                "DATA_DIRA": "/Users/zhangjun/work/gudujian/ThreeTS/data"
+            },
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]
