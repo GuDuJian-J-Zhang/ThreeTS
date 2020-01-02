@@ -20,7 +20,7 @@
             "program": "${workspaceFolder}/node_modules/.bin/webpack",
             "args": [
                 "--config", "./example/webpack.config.js"
-             ]
+            ]
         },
         {
             "type": "node",

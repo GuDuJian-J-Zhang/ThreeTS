@@ -187,5 +187,4 @@ window.onload = function () {
         let nrrd_loader_example = new NrrdLoaderExample();
         nrrd_loader_example.animate();
     }
-    
 }
