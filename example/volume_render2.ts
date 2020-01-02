@@ -1,11 +1,11 @@
 
 import {Scene} from '../src/scene/scene';
 import {NrrdLoader, ENrrdDataArrayType} from '../src/loaders/nrrd_loader';
-import {THREE} from '../src/3rd';
+import { THREE, glMatrix } from '../src/3rd';
 import { Volume } from '../src/volume/volume';
 import { VolumeRenderShader1 } from '../src/shader/volume_render_shader1';
 import { TrackballControls } from '../src/controller/trackball_controls';
-import {glMatrix} from '../src/3rd';
+import { ArcballCamera } from '../src/camera/arcball_camera';
 const cubeStrip = [
     1, 1, 0,
 	0, 1, 0,
@@ -134,9 +134,9 @@ class NrrdLoaderExample {
     private m_gl: WebGL2RenderingContext;
     private m_proj_mat: glMatrix.mat4;
     private m_shader: WebGLProgram;
-    private m_uniforms: {} = {};
-    private m_renderer: THREE.WebGLRenderer;
-    private m_controls: TrackballControls;
+	private m_uniforms: {} = {};
+	private m_camera: ArcballCamera;
+    private m_volumeTexture: WebGLTexture;
 	constructor(nrrd_file_name: string = "test.nrrd") {
 		let that = this;
 		// that.m_renderer.setSize( window.innerWidth, window.innerHeight );
@@ -158,36 +158,41 @@ class NrrdLoaderExample {
 	    	0.1, 100
 	    );
     
-	    let camera = new ArcballCamera(defaultEye, center, up, 2, [WIDTH, HEIGHT]);
-	    const projView = glMatrix.mat4.create();
+	    that.m_camera = new ArcballCamera(defaultEye, center, up, 2, [WIDTH, HEIGHT]);
+	    //const projView = glMatrix.mat4.create();
     
 	    // Register mouse and touch listeners
-	    var controller = new Controller();
-	    controller.mousemove = function(prev, cur, evt) {
-	    	if (evt.buttons == 1) {
-	    		camera.rotate(prev, cur);
+	    // var controller = new Controller();
+	    // controller.mousemove = function(prev, cur, evt) {
+	    // 	if (evt.buttons == 1) {
+	    // 		that.m_camera.rotate(prev, cur);
     
-	    	} else if (evt.buttons == 2) {
-	    		camera.pan([cur[0] - prev[0], prev[1] - cur[1]]);
-	    	}
-	    };
-	    controller.wheel = function(amt) { camera.zoom(amt); };
-	    controller.pinch = controller.wheel;
-	    controller.twoFingerDrag = function(drag) { camera.pan(drag); };
-    
-	    // document.addEventListener("keydown", function(evt) {
-	    // 	if (evt.key == "p") {
-	    // 		takeScreenShot = true;
+	    // 	} else if (evt.buttons == 2) {
+	    // 		that.m_camera.pan(
+		// 			[
+		// 				cur[0] - prev[0], 
+		// 				prev[1] - cur[1]
+		// 			]
+		// 		);
 	    // 	}
-	    // });
+	    // };
+	    // controller.wheel = function(amt) { that.m_camera.zoom(amt); };
+	    // controller.pinch = controller.wheel;
+	    // controller.twoFingerDrag = function(drag) { that.m_camera.pan(drag); };
     
-	    controller.registerForCanvas(that.m_canvas);
+	    // // document.addEventListener("keydown", function(evt) {
+	    // // 	if (evt.key == "p") {
+	    // // 		takeScreenShot = true;
+	    // // 	}
+	    // // });
+    
+	    // controller.registerForCanvas(that.m_canvas);
     
 	    // Setup VAO and VBO to render the cube to run the raymarching shader
-	    var vao =  that.m_gl.createVertexArray();
+	    const vao =  that.m_gl.createVertexArray();
         that.m_gl.bindVertexArray(vao);
     
-	    var vbo = that.m_gl.createBuffer();
+	    const vbo = that.m_gl.createBuffer();
         that.m_gl.bindBuffer( that.m_gl.ARRAY_BUFFER, vbo);
 	    that.m_gl.bufferData( that.m_gl.ARRAY_BUFFER, new Float32Array(cubeStrip), that.m_gl.STATIC_DRAW);
     
@@ -216,19 +221,8 @@ class NrrdLoaderExample {
 	    // 	}
 	    // }
 	}
-	
-	animate(): void  {
-		let that = this;
-		requestAnimationFrame( () => {
-			this.animate();
-        } );
-        
-        that.m_controls.update();
-
-		that.m_renderer.render(that.m_scene, that.m_camera);
-    };
     
-    private loadData(nrrd_file_name: string): void {
+    loadData(nrrd_file_name: string): void {
         const that = this;
         var loader = new NrrdLoader();
 		loader.load( `http://localhost:8000/nrrd/${nrrd_file_name}`, (volume: Volume): void => {
@@ -237,97 +231,90 @@ class NrrdLoaderExample {
 			// Also see https://www.khronos.org/registry/webgl/specs/latest/2.0/#TEXTURE_TYPES_FORMATS_FROM_DOM_ELEMENTS_TABLE
 			// TODO: look the dtype up in the volume metadata
             const volume_data_type: ENrrdDataArrayType = volume.getDataType();
-            let texture_type: THREE.TextureDataType;
-            let float32data: THREE.TypedArray;
+			let texture_type: GLenum;
+			let internalformat: GLenum;
+			let format: GLenum;
             if (volume_data_type === ENrrdDataArrayType.UINT8) {
-                texture_type = THREE.UnsignedByteType;
-                float32data = volume.data;
+				texture_type = that.m_gl.UNSIGNED_BYTE;
+				internalformat = that.m_gl.R8;
+				format = that.m_gl.RED;
             } else if (volume_data_type === ENrrdDataArrayType.FLOAT) {
-                texture_type = THREE.FloatType;
-                float32data = volume.data;
+				texture_type = that.m_gl.FLOAT;
+				internalformat = that.m_gl.R32F;
+				format = that.m_gl.RED;
             } else if (volume_data_type === ENrrdDataArrayType.SHORT) {
-                texture_type = THREE.FloatType;
-                float32data = new Float32Array(volume.data.length);
-                for(let i = 0; i < volume.data.length; i++) {
-                    float32data[i] = volume.data[i] / (volume.data[i] >= 0 ? 32767 : 32768);
-                }
+				texture_type = that.m_gl.SHORT;
+				internalformat = that.m_gl.R16I;
+				format = that.m_gl.RED_INTEGER;
             } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
                 texture_type = THREE.FloatType;
-                float32data = new Float32Array(volume.data.length);
-                for(let i = 0; i < volume.data.length; i++) {
-                    const idata = volume.data[i];
-                    float32data[i] = (idata >= 0x8000) ? -(0x10000 - idata) / 0x8000 : idata / 0x7FFF;
-                }
-            }
+			}
 
-            const volume_xyz: THREE.Vector3 = volume.xyzLength();
-            let texture_3d = new THREE.DataTexture3D( 
-                float32data, 
-                volume_xyz.x, 
-                volume_xyz.y, 
-                volume_xyz.z 
+			const volume_xyz: THREE.Vector3 = volume.xyzLength();
+
+		    const volDims = [volume_xyz.x, volume_xyz.y, volume_xyz.z ];
+    
+		    const tex = that.m_gl.createTexture();
+		    that.m_gl.activeTexture(that.m_gl.TEXTURE0);
+		    that.m_gl.bindTexture(that.m_gl.TEXTURE_3D, tex);
+		    // that.m_gl.texStorage3D(that.m_gl.TEXTURE_3D, 1, internalformat, volDims[0], volDims[1], volDims[2]);
+		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_MIN_FILTER, that.m_gl.LINEAR);
+		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_R, that.m_gl.CLAMP_TO_EDGE);
+		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_S, that.m_gl.CLAMP_TO_EDGE);
+		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_T, that.m_gl.CLAMP_TO_EDGE);
+		    that.m_gl.pixelStorei(WebGL2RenderingContext.UNPACK_ALIGNMENT, 1);
+			that.m_gl.texImage3D(
+                WebGL2RenderingContext.TEXTURE_3D,
+                /*level=*/ 0, internalformat,
+                /*width=*/ volDims[0],
+                /*height=*/ volDims[1],
+                /*depth=*/ volDims[2],
+                /*border=*/ 0, 
+                format, 
+                texture_type, 
+                volume.data
             );
-            texture_3d.format = THREE.RedFormat;
-			texture_3d.type = texture_type;
-			texture_3d.minFilter = texture_3d.magFilter = THREE.LinearFilter;
-			texture_3d.unpackAlignment = 1;
-
-			// Colormap textures
-			const cmtextures = {
-				viridis: new THREE.TextureLoader().load( 'http://localhost:8000/textures/cm_viridis.png', () => {
-                    that.animate();
-                } ),
-				gray: new THREE.TextureLoader().load( 'http://localhost:8000/textures/cm_gray.png', () => {
-                    that.animate();
-                } )
-			};
-
-			// Material
-			var shader = VolumeRenderShader1;
-
-			let uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-			uniforms[ "u_data" ].value = texture_3d;
-			uniforms[ "u_size" ].value.set( 
-                volume_xyz.x, 
-                volume_xyz.y, 
-                volume_xyz.z 
-            );
-			uniforms[ "u_clim" ].value.set( 0, 1);
-			uniforms[ "u_renderstyle" ].value = 1; // 0: MIP, 1: ISO
-			uniforms[ "u_renderthreshold" ].value = 0.15; // For ISO renderstyle
-			uniforms[ "u_cmdata" ].value = cmtextures.viridis;
-
-			const material = new THREE.ShaderMaterial( {
-				uniforms: uniforms,
-				vertexShader: shader.vertexShader,
-				fragmentShader: shader.fragmentShader,
-				side: THREE.BackSide // The volume shader uses the backface as its "reference point"
-			} );
-
-            // THREE.Mesh
-            const geometry = new THREE.BoxBufferGeometry( 
-                volume_xyz.x, 
-                volume_xyz.y, 
-                volume_xyz.z
-            );
-			geometry.translate( 
-                volume_xyz.x / 2 - 0.5, 
-                volume_xyz.y / 2 - 0.5, 
-                volume_xyz.y / 2 - 0.5 
-            );
-
-            var mesh = new THREE.Mesh( geometry, material );
-            that.m_scene.add(mesh);
+			// that.m_gl.texSubImage3D(that.m_gl.TEXTURE_3D, 0, 0, 0, 0,
+			// 	volDims[0], volDims[1], volDims[2],
+			// 	format, texture_type, volume.data);
+			
+    
+		    const longestAxis = Math.max(volDims[0], Math.max(volDims[1], volDims[2]));
+		    const volScale = [volDims[0] / longestAxis, volDims[1] / longestAxis,
+		    	volDims[2] / longestAxis];
+    
+		    that.m_gl.uniform3iv(that.m_uniforms["volume_dims"], volDims);
+		    that.m_gl.uniform3fv(that.m_uniforms["volume_scale"], volScale);
+    
+		    if (!that.m_volumeTexture) {
+				that.m_volumeTexture = tex;
+				
+		    	that.m_gl.clearColor(1.0, 1.0, 1.0, 1.0);
+		    	that.m_gl.clear(that.m_gl.COLOR_BUFFER_BIT);
+    
+				let projView: glMatrix.mat4 = glMatrix.mat4.create();;
+				glMatrix.mat4.mul(projView, that.m_proj_mat, that.m_camera.getCamera());
+		    	that.m_gl.uniformMatrix4fv(that.m_uniforms["proj_view"], false, projView);
+    
+		    	const eye = that.m_camera.eyePos();
+		    	that.m_gl.uniform3fv(that.m_uniforms["eye_pos"], eye);
+    
+		    	that.m_gl.drawArrays(that.m_gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
+		    	// Wait for rendering to actually finish
+		    	that.m_gl.finish();
+		    } else {
+		    	that.m_gl.deleteTexture(that.m_volumeTexture);
+		    	that.m_volumeTexture = tex;
+			}
 	    } );
     }
 
     private onWindowResize(): void {
         const that = this;
-        that.m_camera.aspect = window.innerWidth / window.innerHeight;
-        that.m_camera.updateProjectionMatrix();
-        that.m_renderer.setSize( window.innerWidth, window.innerHeight );
-        that.m_controls.handleResize();
+        // that.m_camera.aspect = window.innerWidth / window.innerHeight;
+        // that.m_camera.updateProjectionMatrix();
+        // that.m_renderer.setSize( window.innerWidth, window.innerHeight );
+        // that.m_controls.handleResize();
     }
 
     private compileShader(
@@ -402,11 +389,11 @@ window.onload = function () {
         const param = res[1].split("=");
         if (param && param.length > 1) {
             const nrrd_file_name: string = param[1];
-            let nrrd_loader_example = new NrrdLoaderExample(nrrd_file_name);
-            nrrd_loader_example.animate();
+			let nrrd_loader_example = new NrrdLoaderExample(nrrd_file_name);
+			nrrd_loader_example.loadData(nrrd_file_name);
         }
     } else {
-        let nrrd_loader_example = new NrrdLoaderExample();
-        nrrd_loader_example.animate();
+		let nrrd_loader_example = new NrrdLoaderExample();
+		nrrd_loader_example.loadData("test.nrrd");
     }
 }
