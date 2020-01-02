@@ -6,6 +6,7 @@ import { Volume } from '../src/volume/volume';
 import { VolumeRenderShader1 } from '../src/shader/volume_render_shader1';
 import { TrackballControls } from '../src/controller/trackball_controls';
 import { ArcballCamera } from '../src/camera/arcball_camera';
+import { Controller } from '../src/controller/webgl_utils_controls';
 const cubeStrip = [
     1, 1, 0,
 	0, 1, 0,
@@ -162,31 +163,31 @@ class NrrdLoaderExample {
 	    //const projView = glMatrix.mat4.create();
     
 	    // Register mouse and touch listeners
-	    // var controller = new Controller();
-	    // controller.mousemove = function(prev, cur, evt) {
-	    // 	if (evt.buttons == 1) {
-	    // 		that.m_camera.rotate(prev, cur);
+	    let controller = new Controller();
+	    controller.mousemove = function(prev, cur, evt) {
+	    	if (evt.buttons == 1) {
+	    		that.m_camera.rotate(prev, cur);
     
-	    // 	} else if (evt.buttons == 2) {
-	    // 		that.m_camera.pan(
-		// 			[
-		// 				cur[0] - prev[0], 
-		// 				prev[1] - cur[1]
-		// 			]
-		// 		);
-	    // 	}
-	    // };
-	    // controller.wheel = function(amt) { that.m_camera.zoom(amt); };
+	    	} else if (evt.buttons == 2) {
+	    		that.m_camera.pan(
+					[
+						cur[0] - prev[0], 
+						prev[1] - cur[1]
+					]
+				);
+	    	}
+	    };
+	    controller.wheel = function(amt) { that.m_camera.zoom(amt); };
 	    // controller.pinch = controller.wheel;
 	    // controller.twoFingerDrag = function(drag) { that.m_camera.pan(drag); };
     
-	    // // document.addEventListener("keydown", function(evt) {
-	    // // 	if (evt.key == "p") {
-	    // // 		takeScreenShot = true;
-	    // // 	}
-	    // // });
+	    // document.addEventListener("keydown", function(evt) {
+	    // 	if (evt.key == "p") {
+	    // 		takeScreenShot = true;
+	    // 	}
+	    // });
     
-	    // controller.registerForCanvas(that.m_canvas);
+	    controller.registerForCanvas(that.m_canvas);
     
 	    // Setup VAO and VBO to render the cube to run the raymarching shader
 	    const vao =  that.m_gl.createVertexArray();
