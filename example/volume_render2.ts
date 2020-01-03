@@ -242,6 +242,8 @@ class NrrdLoaderExample {
 				texture_type = that.m_gl.FLOAT;
 				internalformat = that.m_gl.R32F;
 				format = that.m_gl.RED;
+				that.m_gl.getExtension('OES_texture_float');
+                that.m_gl.getExtension('OES_texture_float_linear');
             } else if (volume_data_type === ENrrdDataArrayType.SHORT) {
 				texture_type = that.m_gl.SHORT;
 				internalformat = that.m_gl.R16I;
@@ -260,7 +262,7 @@ class NrrdLoaderExample {
 		    that.m_gl.activeTexture(that.m_gl.TEXTURE0);
 		    that.m_gl.bindTexture(that.m_gl.TEXTURE_3D, tex);
 		    // that.m_gl.texStorage3D(that.m_gl.TEXTURE_3D, 1, internalformat, volDims[0], volDims[1], volDims[2]);
-		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_MIN_FILTER, that.m_gl.LINEAR);
+		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_MIN_FILTER, that.m_gl.NEAREST);
 		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_R, that.m_gl.CLAMP_TO_EDGE);
 		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_S, that.m_gl.CLAMP_TO_EDGE);
 		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_T, that.m_gl.CLAMP_TO_EDGE);
