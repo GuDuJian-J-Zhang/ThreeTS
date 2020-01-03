@@ -1,10 +1,7 @@
 
-import {Scene} from '../src/scene/scene';
 import {NrrdLoader, ENrrdDataArrayType} from '../src/loaders/nrrd_loader';
 import { THREE, glMatrix } from '../src/3rd';
 import { Volume } from '../src/volume/volume';
-import { VolumeRenderShader1 } from '../src/shader/volume_render_shader1';
-import { TrackballControls } from '../src/controller/trackball_controls';
 import { ArcballCamera } from '../src/camera/arcball_camera';
 import { Controller } from '../src/controller/webgl_utils_controls';
 const cubeStrip = [
@@ -166,7 +163,8 @@ class NrrdLoaderExample {
 	    let controller = new Controller();
 	    controller.mousemove = function(prev, cur, evt) {
 	    	if (evt.buttons == 1) {
-	    		that.m_camera.rotate(prev, cur);
+				that.m_camera.rotate(prev, cur);
+				that.draw();
     
 	    	} else if (evt.buttons == 2) {
 	    		that.m_camera.pan(
@@ -175,9 +173,10 @@ class NrrdLoaderExample {
 						prev[1] - cur[1]
 					]
 				);
+				that.draw();
 	    	}
 	    };
-	    controller.wheel = function(amt) { that.m_camera.zoom(amt); };
+	    controller.wheel = function(amt) { that.m_camera.zoom(amt); that.draw();};
 	    // controller.pinch = controller.wheel;
 	    // controller.twoFingerDrag = function(drag) { that.m_camera.pan(drag); };
     
@@ -248,7 +247,9 @@ class NrrdLoaderExample {
 				internalformat = that.m_gl.R16I;
 				format = that.m_gl.RED_INTEGER;
             } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
-                texture_type = THREE.FloatType;
+				texture_type = that.m_gl.FLOAT;
+				internalformat = that.m_gl.R32F;
+				format = that.m_gl.RED;
 			}
 
 			const volume_xyz: THREE.Vector3 = volume.xyzLength();
@@ -266,7 +267,8 @@ class NrrdLoaderExample {
 		    that.m_gl.pixelStorei(WebGL2RenderingContext.UNPACK_ALIGNMENT, 1);
 			that.m_gl.texImage3D(
                 WebGL2RenderingContext.TEXTURE_3D,
-                /*level=*/ 0, internalformat,
+				/*level=*/ 0, 
+				internalformat,
                 /*width=*/ volDims[0],
                 /*height=*/ volDims[1],
                 /*depth=*/ volDims[2],
@@ -290,19 +292,7 @@ class NrrdLoaderExample {
 		    if (!that.m_volumeTexture) {
 				that.m_volumeTexture = tex;
 				
-		    	that.m_gl.clearColor(1.0, 1.0, 1.0, 1.0);
-		    	that.m_gl.clear(that.m_gl.COLOR_BUFFER_BIT);
-    
-				let projView: glMatrix.mat4 = glMatrix.mat4.create();;
-				glMatrix.mat4.mul(projView, that.m_proj_mat, that.m_camera.getCamera());
-		    	that.m_gl.uniformMatrix4fv(that.m_uniforms["proj_view"], false, projView);
-    
-		    	const eye = that.m_camera.eyePos();
-		    	that.m_gl.uniform3fv(that.m_uniforms["eye_pos"], eye);
-    
-		    	that.m_gl.drawArrays(that.m_gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
-		    	// Wait for rendering to actually finish
-		    	that.m_gl.finish();
+		    	that.draw();
 		    } else {
 		    	that.m_gl.deleteTexture(that.m_volumeTexture);
 		    	that.m_volumeTexture = tex;
@@ -381,7 +371,24 @@ class NrrdLoaderExample {
         for (let unif in that.m_uniforms) {
             that.m_uniforms[unif] = gl.getUniformLocation(that.m_shader, unif);
         }
-    }
+	}
+	
+	private draw(): void {
+		const that = this;
+		that.m_gl.clearColor(1.0, 1.0, 1.0, 1.0);
+		that.m_gl.clear(that.m_gl.COLOR_BUFFER_BIT);
+    
+		let projView: glMatrix.mat4 = glMatrix.mat4.create();;
+		glMatrix.mat4.mul(projView, that.m_proj_mat, that.m_camera.getCamera());
+		that.m_gl.uniformMatrix4fv(that.m_uniforms["proj_view"], false, projView);
+    
+		const eye = that.m_camera.eyePos();
+		that.m_gl.uniform3fv(that.m_uniforms["eye_pos"], eye);
+    
+		that.m_gl.drawArrays(that.m_gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
+		// Wait for rendering to actually finish
+		that.m_gl.finish();
+	}
 }
 
 window.onload = function () {
