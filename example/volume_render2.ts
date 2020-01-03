@@ -4,6 +4,7 @@ import { THREE, glMatrix } from '../src/3rd';
 import { Volume } from '../src/volume/volume';
 import { ArcballCamera } from '../src/camera/arcball_camera';
 import { Controller } from '../src/controller/webgl_utils_controls';
+import { Uint16Attribute, TypedArray } from 'three';
 const cubeStrip = [
     1, 1, 0,
 	0, 1, 0,
@@ -234,24 +235,41 @@ class NrrdLoaderExample {
 			let texture_type: GLenum;
 			let internalformat: GLenum;
 			let format: GLenum;
+			let data: TypedArray;
             if (volume_data_type === ENrrdDataArrayType.UINT8) {
 				texture_type = that.m_gl.UNSIGNED_BYTE;
 				internalformat = that.m_gl.R8;
 				format = that.m_gl.RED;
+				data = volume.data;
             } else if (volume_data_type === ENrrdDataArrayType.FLOAT) {
 				texture_type = that.m_gl.FLOAT;
 				internalformat = that.m_gl.R32F;
 				format = that.m_gl.RED;
+				data = volume.data;
 				that.m_gl.getExtension('OES_texture_float');
                 that.m_gl.getExtension('OES_texture_float_linear');
             } else if (volume_data_type === ENrrdDataArrayType.SHORT) {
-				texture_type = that.m_gl.SHORT;
-				internalformat = that.m_gl.R16I;
-				format = that.m_gl.RED_INTEGER;
-            } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
+				data = that.int16ToFloat32(<Int16Array>volume.data, 0, volume.data.length);
 				texture_type = that.m_gl.FLOAT;
 				internalformat = that.m_gl.R32F;
 				format = that.m_gl.RED;
+				// data = volume.data;
+				that.m_gl.getExtension('OES_texture_float');
+                that.m_gl.getExtension('OES_texture_float_linear');
+				// texture_type = that.m_gl.SHORT;
+				// internalformat = that.m_gl.R16I;
+				// format = that.m_gl.RED_INTEGER;
+            } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
+				data = that.uint16ToFloat32(<Uint16Array>volume.data, 0, volume.data.length);
+				texture_type = that.m_gl.FLOAT;
+				internalformat = that.m_gl.R32F;
+				format = that.m_gl.RED;
+				// // data = volume.data;
+				that.m_gl.getExtension('OES_texture_float');
+                that.m_gl.getExtension('OES_texture_float_linear');
+				// texture_type = that.m_gl.UNSIGNED_SHORT;
+				// internalformat = that.m_gl.R16UI;
+				// format = that.m_gl.RED_INTEGER;
 			}
 
 			const volume_xyz: THREE.Vector3 = volume.xyzLength();
@@ -262,7 +280,7 @@ class NrrdLoaderExample {
 		    that.m_gl.activeTexture(that.m_gl.TEXTURE0);
 		    that.m_gl.bindTexture(that.m_gl.TEXTURE_3D, tex);
 		    // that.m_gl.texStorage3D(that.m_gl.TEXTURE_3D, 1, internalformat, volDims[0], volDims[1], volDims[2]);
-		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_MIN_FILTER, that.m_gl.NEAREST);
+		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_MIN_FILTER, that.m_gl.LINEAR);
 		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_R, that.m_gl.CLAMP_TO_EDGE);
 		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_S, that.m_gl.CLAMP_TO_EDGE);
 		    that.m_gl.texParameteri(that.m_gl.TEXTURE_3D, that.m_gl.TEXTURE_WRAP_T, that.m_gl.CLAMP_TO_EDGE);
@@ -277,7 +295,7 @@ class NrrdLoaderExample {
                 /*border=*/ 0, 
                 format, 
                 texture_type, 
-                volume.data
+                data
             );
 			// that.m_gl.texSubImage3D(that.m_gl.TEXTURE_3D, 0, 0, 0, 0,
 			// 	volDims[0], volDims[1], volDims[2],
@@ -308,7 +326,29 @@ class NrrdLoaderExample {
         // that.m_camera.updateProjectionMatrix();
         // that.m_renderer.setSize( window.innerWidth, window.innerHeight );
         // that.m_controls.handleResize();
-    }
+	}
+	
+	private int16ToFloat32(inputArray: Int16Array, startIndex: number, length: number): Float32Array {
+		let output = new Float32Array(inputArray.length-startIndex);
+		for (var i = startIndex; i < length; i++) {
+			var int = inputArray[i];
+			// If the high bit is on, then it is a negative number, and actually counts backwards.
+			var float = (int >= 0x8000) ? -(0x10000 - int) / 0x8000 : int / 0x7FFF;
+			output[i] = float;
+		}
+		return output;
+	}
+
+	private uint16ToFloat32(inputArray: Uint16Array, startIndex: number, length: number): Float32Array {
+		let output = new Float32Array(inputArray.length-startIndex);
+		for (var i = startIndex; i < length; i++) {
+			var int = inputArray[i];
+			// If the high bit is on, then it is a negative number, and actually counts backwards.
+			var float = int / 65535;
+			output[i] = float;
+		}
+		return output;
+	}
 
     private compileShader(
         gl: WebGL2RenderingContext, 
