@@ -4,7 +4,6 @@ import { THREE, glMatrix } from '../src/3rd';
 import { Volume } from '../src/volume/volume';
 import { ArcballCamera } from '../src/camera/arcball_camera';
 import { Controller } from '../src/controller/webgl_utils_controls';
-import { Uint16Attribute, TypedArray } from 'three';
 const cubeStrip = [
     1, 1, 0,
 	0, 1, 0,
@@ -54,7 +53,7 @@ uniform float dt_scale;
 
 in vec3 vray_dir;
 flat in vec3 transformed_eye;
-out vec4 color;
+layout(location = 0) out vec4 color;
 
 vec2 intersect_box(vec3 orig, vec3 dir) {
 	const vec3 box_min = vec3(0);
@@ -135,7 +134,8 @@ class NrrdLoaderExample {
     private m_shader: WebGLProgram;
 	private m_uniforms: {} = {};
 	private m_camera: ArcballCamera;
-    private m_volumeTexture: WebGLTexture;
+	private m_volumeTexture: WebGLTexture;
+	private m_fbo: WebGLFramebuffer;
 	constructor(nrrd_file_name: string = "test.nrrd") {
 		let that = this;
 		// that.m_renderer.setSize( window.innerWidth, window.innerHeight );
@@ -146,7 +146,10 @@ class NrrdLoaderExample {
 	    if (!that.m_gl) {
 	    	alert("Unable to initialize WebGL2. Your browser may not support it");
 	    	return;
-	    }
+		}
+		
+		that.createfbo(that.m_gl);
+
 	    const WIDTH: number = Number(that.m_canvas.getAttribute("width"));
 	    const HEIGHT: number = Number(that.m_canvas.getAttribute("height"));
     
@@ -190,8 +193,8 @@ class NrrdLoaderExample {
 	    controller.registerForCanvas(that.m_canvas);
     
 	    // Setup VAO and VBO to render the cube to run the raymarching shader
-	    const vao =  that.m_gl.createVertexArray();
-        that.m_gl.bindVertexArray(vao);
+	    // const vao =  that.m_gl.createVertexArray();
+        // that.m_gl.bindVertexArray(vao);
     
 	    const vbo = that.m_gl.createBuffer();
         that.m_gl.bindBuffer( that.m_gl.ARRAY_BUFFER, vbo);
@@ -235,7 +238,7 @@ class NrrdLoaderExample {
 			let texture_type: GLenum;
 			let internalformat: GLenum;
 			let format: GLenum;
-			let data: TypedArray;
+			let data: THREE.TypedArray;
             if (volume_data_type === ENrrdDataArrayType.UINT8) {
 				texture_type = that.m_gl.UNSIGNED_BYTE;
 				internalformat = that.m_gl.R8;
@@ -260,16 +263,16 @@ class NrrdLoaderExample {
 				// internalformat = that.m_gl.R16I;
 				// format = that.m_gl.RED_INTEGER;
             } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
-				data = that.uint16ToFloat32(<Uint16Array>volume.data, 0, volume.data.length);
-				texture_type = that.m_gl.FLOAT;
-				internalformat = that.m_gl.R32F;
-				format = that.m_gl.RED;
-				// // data = volume.data;
-				that.m_gl.getExtension('OES_texture_float');
-                that.m_gl.getExtension('OES_texture_float_linear');
-				// texture_type = that.m_gl.UNSIGNED_SHORT;
-				// internalformat = that.m_gl.R16UI;
-				// format = that.m_gl.RED_INTEGER;
+				data = volume.data;//that.uint16ToFloat32(<Uint16Array>volume.data, 0, volume.data.length);
+				// texture_type = that.m_gl.FLOAT;
+				// internalformat = that.m_gl.R32F;
+				// format = that.m_gl.RED;
+				// // // data = volume.data;
+				// that.m_gl.getExtension('OES_texture_float');
+                // that.m_gl.getExtension('OES_texture_float_linear');
+				texture_type = that.m_gl.UNSIGNED_SHORT;
+				internalformat = that.m_gl.R16UI;
+				format = that.m_gl.RED_INTEGER;
 			}
 
 			const volume_xyz: THREE.Vector3 = volume.xyzLength();
@@ -417,6 +420,26 @@ class NrrdLoaderExample {
 	
 	private draw(): void {
 		const that = this;
+
+		that.m_gl.bindFramebuffer(that.m_gl.FRAMEBUFFER, that.m_fbo);
+		{
+			that.m_gl.drawBuffers([that.m_gl.COLOR_ATTACHMENT0]);
+			that.doDraw();
+		}
+
+		that.m_gl.bindFramebuffer(that.m_gl.FRAMEBUFFER, null);
+		
+		that.doDraw();
+
+		if (1) {
+            that.m_gl.bindFramebuffer(that.m_gl.FRAMEBUFFER, that.m_fbo);
+		    that.saveTextureData2Image();
+		}
+		
+	}
+
+	private doDraw(): void {
+		const that = this;
 		that.m_gl.clearColor(1.0, 1.0, 1.0, 1.0);
 		that.m_gl.clear(that.m_gl.COLOR_BUFFER_BIT);
     
@@ -430,6 +453,65 @@ class NrrdLoaderExample {
 		that.m_gl.drawArrays(that.m_gl.TRIANGLE_STRIP, 0, cubeStrip.length / 3);
 		// Wait for rendering to actually finish
 		that.m_gl.finish();
+	}
+
+	private saveTextureData2Image(): void {
+		const that = this;
+		const data = new Uint8Array(1440 * 801 * 4);
+		that.m_gl.readPixels(0, 0, 1440, 801, that.m_gl.RGBA, that.m_gl.UNSIGNED_BYTE, data);
+		const canvas = document.createElement('canvas');
+        canvas.width = 1440;
+        canvas.height = 801;
+        const context = canvas.getContext('2d');
+    
+        // Copy the pixels to a 2D canvas
+        const imageData = context.createImageData(1440, 801);
+        imageData.data.set(data);
+		context.putImageData(imageData, 0, 0);
+		let image = canvas.toDataURL("image/png");
+		console.log(image);
+	}
+
+	private createfbo(gl: WebGL2RenderingContext): void {
+		const that = this;
+		// Create a texture to render to
+		const targetTextureWidth = 1440;
+		const targetTextureHeight = 801;
+		const targetTexture = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, targetTexture);
+	  
+		{
+		  // define size and format of level 0
+		  const level = 0;
+		  const internalFormat = gl.RGBA;
+		  const border = 0;
+		  const format = gl.RGBA;
+		  const type = gl.UNSIGNED_BYTE;
+		  const data = null;
+		  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+						targetTextureWidth, targetTextureHeight, border,
+						format, type, data);
+	  
+		  // set the filtering so we don't need mips
+		  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		}
+	  
+		// Create and bind the framebuffer
+		that.m_fbo = gl.createFramebuffer();
+		gl.bindFramebuffer(gl.FRAMEBUFFER, that.m_fbo);
+	  
+		// attach the texture as the first color attachment
+		const attachmentPoint = gl.COLOR_ATTACHMENT0;
+		const level = 0;
+		gl.framebufferTexture2D(
+			gl.FRAMEBUFFER, 
+			attachmentPoint, 
+			gl.TEXTURE_2D, 
+			targetTexture, 
+			level
+		);
 	}
 }
 
