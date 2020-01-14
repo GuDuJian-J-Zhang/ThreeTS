@@ -151,9 +151,9 @@
       "pose": {
         "position": {
           "voxelSize": [
-            0.01,
-            0.01,
-            0.01
+            0.1,
+            0.1,
+            0.1
           ],
           "voxelCoordinates": [
             52.77689743041992,
@@ -162,8 +162,71 @@
           ]
         }
       },
-      "zoomFactor": 1000
+      "zoomFactor": 100
     },
-    "perspectiveZoom": 0.01,
+    "perspectiveZoom": 0.1,
+    "layout": "3d"
+  }
+
+  {
+    "layers": [
+      {
+        "source": "node-server://http://localhost:8000/nii/test.nii",
+        "type": "volume",
+        "name": "test.nii"
+      }
+    ],
+    "navigation": {
+      "pose": {
+        "position": {
+          "voxelSize": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "voxelCoordinates": [
+            5.776505947113037,
+            3.5793278217315674,
+            9.179033279418945
+          ]
+        }
+      },
+      "zoomFactor": 100
+    },
+    "perspectiveZoom": 0.1,
+    "layout": "3d"
+  }
+
+  {
+    "layers": [
+      {
+        "source": "node-server://http://localhost:8000/nii/stent.nii",
+        "type": "volume",
+        "name": "stent.nii"
+      },
+      {
+        "source": "node-server://http://localhost:8000/nii/test.nii",
+        "type": "volume",
+        "name": "test.nii"
+      }
+    ],
+    "navigation": {
+      "pose": {
+        "position": {
+          "voxelSize": [
+            0.10000000149011612,
+            0.10000000149011612,
+            0.10000000149011612
+          ],
+          "voxelCoordinates": [
+            3.9786038398742676,
+            2.494943618774414,
+            7.124964714050293
+          ]
+        }
+      },
+      "zoomFactor": 100
+    },
+    "perspectiveZoom": 0.02,
     "layout": "3d"
   }
