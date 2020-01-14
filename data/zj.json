@@ -31,7 +31,7 @@
           "voxelSize": [
             4,
             4,
-            40
+            4
           ],
           "voxelCoordinates": [
             0,
@@ -78,7 +78,7 @@
   {
     "layers": [
       {
-        "source": "nifti://http://localhost:8000/nii/stent.nii",
+        "source": "node-server://http://localhost:8000/nii/stent.nii",
         "type": "image",
         "name": "stent.nii"
       }
@@ -107,33 +107,25 @@
 {
     "layers": [
         {
-            "type": "segmentation",
-            "skeletons": "node-server://http://localhost:8000/swc/test.swc",
-            "segments": [
-              "1"
-            ],
-            "skeletonRendering": {
-              "mode2d": "lines_and_points",
-              "mode3d": "lines"
-            },
-            "name": "neuropil-regions-surface"
-        },
-        {
             "type": "mesh",
             "source": "node-server://http://localhost:8000/stl/Segmentation_anterior reticular formation.stl",
             "vertexAttributeSources": [],
-            "shader": "void main() {\n  emitRGBA(vec4(0.7409811728685447, 0.0746512149846088, 0.3023924711679207, 0.8));\n}\n",
             "name": "neuropil-full-surface"
+        },
+        {
+          "source": "node-server://http://localhost:8000/nii/stent.nii",
+          "type": "volume",
+          "name": "stent.nii"
         }
     ],
     "navigation": {
         "pose": {
             "position": {
-                "voxelSize": [
-                    4,
-                    4,
-                    4
-                ],
+              "voxelSize": [
+                0.009999999776482582,
+                0.009999999776482582,
+                0.009999999776482582
+              ],
                 "voxelCoordinates": [
                     50.535362243652344,
                     132.52601623535156,
@@ -143,6 +135,35 @@
         },
         "zoomFactor": 120.991144617663
     },
-    "perspectiveZoom": 4.338617996942407,
+    "perspectiveZoom": 0.01,
     "layout": "3d"
 }
+
+{
+    "layers": [
+      {
+        "source": "node-server://http://localhost:8000/nii/stent.nii",
+        "type": "volume",
+        "name": "stent.nii"
+      }
+    ],
+    "navigation": {
+      "pose": {
+        "position": {
+          "voxelSize": [
+            0.01,
+            0.01,
+            0.01
+          ],
+          "voxelCoordinates": [
+            52.77689743041992,
+            53.07188034057617,
+            16.311384201049805
+          ]
+        }
+      },
+      "zoomFactor": 1000
+    },
+    "perspectiveZoom": 0.01,
+    "layout": "3d"
+  }
