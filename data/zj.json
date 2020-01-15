@@ -230,3 +230,67 @@
     "perspectiveZoom": 0.02,
     "layout": "3d"
   }
+
+  {
+    "layers": [
+      {
+        "source": "node-server://http://localhost:8000/nii/HuCH2BG6s_antsBTPtemplate0_6_16bit.nii",
+        "type": "volume",
+        "name": "HuCH2BG6s_antsBTPtemplate0_6_16bit.nii"
+      }
+    ],
+    "navigation": {
+      "pose": {
+        "position": {
+          "voxelSize": [
+            0.009999999776482582,
+            0.009999999776482582,
+            0.009999999776482582
+          ],
+          "voxelCoordinates": [
+            45.91233444213867,
+            61.07577133178711,
+            39.720054626464844
+          ]
+        }
+      },
+      "zoomFactor": 100
+    },
+    "perspectiveZoom": 0.01,
+    "layout": "3d"
+  }
+
+
+  {
+    "layers": [
+      {
+        "type": "mesh",
+        "source": "node-server://http://localhost:8000/stl/Segmentation_vagus motor neurons.stl",
+        "vertexAttributeSources": [],
+        "name": "neuropil-full-surface"
+      },
+      {
+        "source": "node-server://http://localhost:8000/nii/stent.nii",
+        "type": "volume",
+        "name": "stent.nii"
+      }
+    ],
+    "navigation": {
+      "pose": {
+        "position": {
+          "voxelSize": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "voxelCoordinates": [
+            281.9073181152344,
+            205.0653076171875,
+            189.1879119873047
+          ]
+        }
+      },
+      "zoomFactor": 1
+    },
+    "layout": "3d"
+  }
