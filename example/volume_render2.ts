@@ -110,7 +110,7 @@ void main(void) {
 		float val = texture(volume, p).r;
 		vec4 val_color = vec4(colormapJet(val), val);
 		// Opacity correction
-		val_color.a = 1.0 - pow(1.0 - val_color.a, dt_scale);
+		val_color.a = 1.0 - pow(1.0 - val_color.a, 0.01);
 		color.rgb += (1.0 - color.a) * val_color.a * val_color.rgb;
 		color.a += (1.0 - color.a) * val_color.a;
 		if (color.a >= 0.95) {
@@ -263,16 +263,16 @@ class NrrdLoaderExample {
 				// internalformat = that.m_gl.R16I;
 				// format = that.m_gl.RED_INTEGER;
             } else if (volume_data_type === ENrrdDataArrayType.UINT16) {
-				data = volume.data;//that.uint16ToFloat32(<Uint16Array>volume.data, 0, volume.data.length);
-				// texture_type = that.m_gl.FLOAT;
-				// internalformat = that.m_gl.R32F;
-				// format = that.m_gl.RED;
+				data = that.uint16ToFloat32(<Uint16Array>volume.data, 0, volume.data.length);
+				texture_type = that.m_gl.FLOAT;
+				internalformat = that.m_gl.R32F;
+				format = that.m_gl.RED;
 				// // // data = volume.data;
-				// that.m_gl.getExtension('OES_texture_float');
-                // that.m_gl.getExtension('OES_texture_float_linear');
-				texture_type = that.m_gl.UNSIGNED_SHORT;
-				internalformat = that.m_gl.R16UI;
-				format = that.m_gl.RED_INTEGER;
+				that.m_gl.getExtension('OES_texture_float');
+                that.m_gl.getExtension('OES_texture_float_linear');
+				// texture_type = that.m_gl.UNSIGNED_SHORT;
+				// internalformat = that.m_gl.R16UI;
+				// format = that.m_gl.RED_INTEGER;
 			}
 
 			const volume_xyz: THREE.Vector3 = volume.xyzLength();
