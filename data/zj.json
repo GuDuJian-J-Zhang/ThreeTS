@@ -237,6 +237,18 @@
         "source": "node-server://http://localhost:8000/nii/HuCH2BG6s_antsBTPtemplate0_6_16bit.nii",
         "type": "volume",
         "name": "HuCH2BG6s_antsBTPtemplate0_6_16bit.nii"
+      },
+      {
+        "type": "segmentation",
+        "skeletons": "node-server://http://localhost:8000/swc/test.swc",
+        "segments": [
+          "1"
+        ],
+        "skeletonRendering": {
+          "mode2d": "lines_and_points",
+          "mode3d": "lines"
+        },
+        "name": "neuropil-regions-surface"
       }
     ],
     "navigation": {
@@ -294,3 +306,35 @@
     },
     "layout": "3d"
   }
+
+
+  {
+    "layers": [
+        {
+            "type": "mesh",
+            "source": "node-server://http://localhost:8000/stl/Segmentation_vagus motor neurons.stl",
+            "vertexAttributeSources": [],
+            "shader": "void main() {\n  emitRGBA(vec4(0.09325804466704657, 0.9404636234272294, 0.2733926118926242, 0.8));\n}\n",
+            "name": "neuropil-full-surface"
+        }
+    ],
+    "navigation": {
+        "pose": {
+            "position": {
+                "voxelSize": [
+                    1,
+                    4,
+                    4
+                ],
+                "voxelCoordinates": [
+                    240,
+                    183,
+                    70
+                ]
+            }
+        },
+        "zoomFactor": 120.991144617663
+    },
+    "perspectiveZoom": 4.338617996942407,
+    "layout": "3d"
+}
